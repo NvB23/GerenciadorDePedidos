@@ -1,0 +1,43 @@
+# Compiled class file
+*.class
+
+# Generated files
+*.log
+*.lock
+
+# Package Files
+# --------------
+# Maven
+target/
+# Gradle
+build/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# NetBeans
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# VS Code
+.vscode/
+
+# Project Files
+# -------------
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+hs_err_pid*

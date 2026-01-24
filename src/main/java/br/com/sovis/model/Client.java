@@ -4,28 +4,30 @@ import java.time.LocalDateTime;
 
 public class Client {
     private Long id;
-    private String nome;
+    private final String name;
     private String email;
-    private String telefone;
-    private final String dataCadastro = LocalDateTime.now().toLocalDate().toString();;
+    private final String phone;
+    private final String dateRegister = LocalDateTime.now().toLocalDate().toString();;
 
-    public Client(Long id, String nome, String email, String telefone) {
+    public Client(Long id, String name, String email, String phone) {
         this.id = id;
-        this.nome = nome;
+        this.name = name;
         this.email = email;
-        this.telefone = telefone;
+        this.phone = phone;
+    }
+
+    public Client(String name, String email, String phone) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
+    public String getName() {
+        return name;
     }
 
     public String getEmail() {
@@ -36,15 +38,11 @@ public class Client {
         this.email = email;
     }
 
-    public String getTelefone() {
-        return telefone;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public String getDataCadastro() {
-        return dataCadastro;
+    public String getDateRegister() {
+        return dateRegister;
     }
 }

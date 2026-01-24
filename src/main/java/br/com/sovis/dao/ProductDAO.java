@@ -1,0 +1,98 @@
+package br.com.sovis.dao;
+
+import br.com.sovis.db.Database;
+import br.com.sovis.model.Product;
+import totalcross.sql.Connection;
+import totalcross.sql.PreparedStatement;
+import totalcross.sql.Statement;
+import totalcross.sql.ResultSet;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+public class ProductDAO {
+    public void createProduct(String name, String description, String price) throws SQLException {
+        Connection connection = Database.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "INSERT INTO produto(nome, descricao, preco) VALUES(?, ?, ?);");
+
+        preparedStatement.setString(1, name);
+        preparedStatement.setString(2, description);
+        preparedStatement.setString(3, price);
+
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
+        connection.close();
+    }
+
+    public void updateProduct(String id, String name, String description, String price) throws SQLException {
+        Connection connection = Database.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "UPDATE produto SET nome = ?, descricao = ?, preco = ? WHERE id = ?;");
+
+        preparedStatement.setString(1, name);
+        preparedStatement.setString(2, description);
+        preparedStatement.setString(3, price);
+        preparedStatement.setString(4, id);
+
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
+        connection.close();
+    }
+
+    public void deleteProduct(String id) throws SQLException {
+        Connection connection = Database.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "DELETE FROM produto WHERE id = ?;");
+
+        preparedStatement.setString(1, id);
+
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
+        connection.close();
+    }
+
+    public ArrayList<Product> getProducts() throws SQLException {
+        ArrayList<Product> products = new ArrayList<>();
+        Connection connection = Database.getConnection();
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(
+                "SELECT * FROM produto;");
+
+        while (resultSet.next()) {
+            String id = resultSet.getString("id");
+            String name = resultSet.getString("nome");
+            String description = resultSet.getString("descricao");
+            String price = resultSet.getString("preco");
+            Product product = new Product(Long.parseLong(id), name, description, Double.parseDouble(price));
+            products.add(product);
+        }
+
+        resultSet.close();
+        statement.close();
+        connection.close();
+
+        return products;
+    }
+
+    public Product getProductById(String idPassed) throws SQLException {
+        Connection connection = Database.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM produto WHERE id = ?;");
+        preparedStatement.setString(1, idPassed);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            String id = resultSet.getString("id");
+            String name = resultSet.getString("nome");
+            String description = resultSet.getString("descricao");
+            String price = resultSet.getString("preco");
+            return new Product(Long.parseLong(id), name, description, Double.parseDouble(price));
+        }
+
+        resultSet.close();
+        preparedStatement.close();
+        connection.close();
+
+        return null;
+    }
+}

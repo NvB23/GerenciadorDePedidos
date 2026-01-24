@@ -1,53 +1,112 @@
 package br.com.sovis.view.screens.product;
 
-import br.com.sovis.view.partials.product.ContentFieldProduct;
-import br.com.sovis.view.partials.common.TabBar;
-import br.com.sovis.view.screens.order.HomeScreen;
-import totalcross.ui.Container;
+import br.com.sovis.controller.ProductController;
+import br.com.sovis.exception.ButtonException;
+import br.com.sovis.model.Product;
+import br.com.sovis.view.style.Variables;
+import totalcross.io.IOException;
+import totalcross.ui.*;
+import totalcross.ui.event.ControlEvent;
+import totalcross.ui.event.Event;
+import totalcross.ui.gfx.Color;
+import totalcross.ui.image.Image;
+import totalcross.ui.image.ImageException;
 
-import java.util.HashMap;
+import java.sql.SQLException;
 
 public class EditProductScreen extends Container {
-    private final Container containerDeVolta;
-    private final Long idParaEditar;
+    private final Container toContainer;
+    private final Product produtoEdit;
+    private final ProductController productController = new ProductController();
 
-    private String nomeAlterado;
-    private String descricaoAlterado;
-    private String precoAlterado;
+    Edit nameEdit, descriptionEdit, priceEdit;
 
-    public EditProductScreen(Container containerDeVolta, Long idParaEditar) {
-        this.containerDeVolta = containerDeVolta;
-        this.idParaEditar = idParaEditar;
+    public EditProductScreen(Container toContainer, Long idParaEditar) throws SQLException {
+        this.toContainer = toContainer;
+        this.produtoEdit = productController.getProductById(idParaEditar);
         setRect(0, 0, FILL, FILL);
     }
 
     @Override
     public void initUI() {
-        HashMap<String, Container> saveBotao = new HashMap<>();
-        saveBotao.put("save.png", editarCliente());
-        add(new TabBar(new HomeScreen(), "Editar Produto", saveBotao), 0, 0, FILL, PARENTSIZE + 8);
+        Container tabBar = new Container();
+        tabBar.setBackColor(Variables.PRIMARY_COLOR);
+        tabBar.setRect(0,0, FILL, PARENTSIZE + 8);
 
-        // Recupera o produto pelo id informado e depois passa para os campos
+        try {
+            Button backButton = new Button(new Image("back-arrow.png").getScaledInstance(20, 20));
+            backButton.setBackColor(Variables.PRIMARY_COLOR);
+            backButton.appId = 999;
+            tabBar.add(backButton, LEFT, TOP);
+        } catch (ImageException | IOException e) {
+            throw new ButtonException(e);
+        }
 
-        ContentFieldProduct contentFieldProduct = new ContentFieldProduct("Coca Col", "Latinha de Coca Cola", 123.45);
+        Label titleLabel = new Label("Editar Produto");
+        titleLabel.setForeColor(Color.WHITE);
+        tabBar.add(titleLabel,  AFTER + 8, CENTER);
 
-        nomeAlterado = contentFieldProduct.getNomeAlterado();
-        descricaoAlterado = contentFieldProduct.getDescricaoAlterado();
-        precoAlterado = contentFieldProduct.getPrecoAlterado();
+        Button saveButton;
+        try {
+            saveButton = new Button(new Image("save.png").getScaledInstance(30, 30));
+        } catch (ImageException | IOException e) {
+            throw new ButtonException(e);
+        }
 
-        add(contentFieldProduct, 0, TOP + 80, FILL, FILL);
+        saveButton.setBackColor(Variables.PRIMARY_COLOR);
+        saveButton.appId = 0;
+        tabBar.add(saveButton, RIGHT, CENTER);
+
+        add(tabBar);
+
+        Label nameLabel = new Label("Nome do Produto");
+        nameLabel.setForeColor(Variables.SECOND_COLOR);
+        add(nameLabel, PARENTSIZE + 50, TOP + 60, PARENTSIZE + 90, PREFERRED);
+        nameEdit = new Edit();
+        nameEdit.setForeColor(Variables.PRIMARY_COLOR);
+        nameEdit.setText(produtoEdit.getName());
+        add(nameEdit, CENTER, AFTER + 5, PARENTSIZE + 90, PREFERRED - 20);
+
+        Label descriptionLabel = new Label("Descrição do Produto");
+        descriptionLabel.setForeColor(Variables.SECOND_COLOR);
+        add(descriptionLabel, PARENTSIZE + 50, AFTER + 30 , PARENTSIZE + 90, PREFERRED);
+        descriptionEdit = new Edit();
+        descriptionEdit.setForeColor(Variables.PRIMARY_COLOR);
+        descriptionEdit.setText(produtoEdit.getDescription());
+        add(descriptionEdit, CENTER, AFTER + 5, PARENTSIZE + 90, PREFERRED - 20);
+
+        Label priceLabel = new Label("Preço do Produto (R$)");
+        priceLabel.setForeColor(Variables.SECOND_COLOR);
+        add(priceLabel, PARENTSIZE + 50, AFTER + 30 , PARENTSIZE + 90, PREFERRED);
+        priceEdit = new Edit();
+        priceEdit.setValidChars("0123456789.");
+        priceEdit.setForeColor(Variables.PRIMARY_COLOR);
+        priceEdit.setText(String.valueOf(produtoEdit.getPrice()));
+        add(priceEdit, CENTER, AFTER + 5, PARENTSIZE + 90, PREFERRED - 20);
     }
 
-    private Container editarCliente() {
-        // Recupera o produto pelo id e altera a tabela através do controller
-        System.out.println(idParaEditar);
+    @Override
+    public void onEvent(Event event) {
+        if (event.type == ControlEvent.PRESSED && event.target instanceof Button) {
+            if (((Control) event.target).appId == 999) {
+                MainWindow.getMainWindow().swap(toContainer);
+            }
+            if (((Control) event.target).appId == 0) {
+                try {
+                    editClient();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
 
-        // Dados de modificação
-        System.out.println(nomeAlterado);
-        System.out.println(descricaoAlterado);
-        System.out.println(precoAlterado);
-
-        // validação e operação
-        return this.containerDeVolta;
+    private void editClient() throws SQLException {
+        Product product = new Product(
+                nameEdit.getText(),
+                descriptionEdit.getText(),
+                Double.parseDouble(priceEdit.getText()));
+        productController.updateProduct(produtoEdit.getId(), product);
+        MainWindow.getMainWindow().swap(toContainer);
     }
 }

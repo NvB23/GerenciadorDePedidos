@@ -1,45 +1,126 @@
 package br.com.sovis.view.screens.product;
 
+import br.com.sovis.controller.ProductController;
+import br.com.sovis.exception.ButtonException;
+import br.com.sovis.model.Product;
 import br.com.sovis.view.partials.product.ProductTile;
-import br.com.sovis.view.partials.common.TabBar;
 import br.com.sovis.view.partials.common.MainButton;
 import br.com.sovis.view.screens.order.HomeScreen;
+import br.com.sovis.view.style.Variables;
+import totalcross.io.IOException;
 import totalcross.ui.*;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.Event;
+import totalcross.ui.font.Font;
+import totalcross.ui.gfx.Color;
+import totalcross.ui.image.Image;
+import totalcross.ui.image.ImageException;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class ProductScreen extends Container {
-    private ProductTile productTile;
+    private final ProductController productController = new ProductController();
+    ListContainer listContainer;
+    ArrayList<Product> productsList;
 
     @Override
     public void initUI() {
-        add(new TabBar(new HomeScreen(), "Produtos"), 0, 0, FILL, PARENTSIZE + 8);
+        Container tabBar = new Container();
+        tabBar.setBackColor(Variables.PRIMARY_COLOR);
+        tabBar.setRect(0,0, FILL, PARENTSIZE + 8);
 
-        add(new MainButton("product.png", "Adicionar Produto", new AddProductScreen(this)), CENTER, AFTER + 10, PARENTSIZE + 90, PARENTSIZE + 10);
+        try {
+            Button backButton = new Button(new Image("back-arrow.png").getScaledInstance(20, 20));
+            backButton.setBackColor(Variables.PRIMARY_COLOR);
+            backButton.appId = 999;
+            tabBar.add(backButton, LEFT, TOP);
+        } catch (ImageException | IOException e) {
+            throw new ButtonException(e);
+        }
 
-        Label pedidosTitle = new Label("Lista de Produtos");
-        add(pedidosTitle, CENTER, AFTER + 30);
+        Label titleLabel = new Label("Produtos");
+        titleLabel.setForeColor(Color.WHITE);
+        tabBar.add(titleLabel,  AFTER + 8, CENTER);
 
-        ListContainer listContainer = new ListContainer();
-        add(listContainer, LEFT, AFTER + 30, FILL, FILL);
-        for (int i = 0; i < 10; i++) {
-            productTile = new ProductTile(
-                    165*374L,
-                    "Produto " + i,
-                    "Descrição do produto " + i,
-                    234.90 * i
-            );
-            productTile.appId = i;
-            listContainer.addContainer(productTile);
+        add(tabBar);
+
+        add(new MainButton("product.png", "Adicionar Produto", new AddProductScreen(this)), CENTER, AFTER + 70, PARENTSIZE + 90, PARENTSIZE + 10);
+
+        Label productsTitle = new Label("Lista de Produtos");
+        productsTitle.setFont(Font.getFont(true, 15));
+        add(productsTitle, LEFT + 10, AFTER + 30);
+
+        Button deleteButton;
+        Button editButton;
+        try {
+            deleteButton = new Button(new Image("trash.png").getScaledInstance(20,20));
+            deleteButton.setBackColor(Variables.PRIMARY_COLOR);
+            deleteButton.appId = 6;
+            editButton = new Button(new Image("edit.png").getScaledInstance(20,20));
+            editButton.setBackColor(Variables.PRIMARY_COLOR);
+            editButton.appId = 7;
+        } catch (ImageException | IOException e) {
+            throw new ButtonException(e);
+        }
+        add(deleteButton, RIGHT - 10, SAME - 5, PREFERRED - 5, PREFERRED - 5);
+        add(editButton, BEFORE - 10, SAME, PREFERRED - 5, PREFERRED - 5);
+
+        try {
+            productsList = productController.listarProdutos();
+
+            if (productsList.isEmpty()) {
+                Label noProductsLabel = new Label("Sem produtos cadastrados");
+                noProductsLabel.setForeColor(Variables.PRIMARY_COLOR);
+                add(noProductsLabel, CENTER, PARENTSIZE + 60);
+            }
+            else {
+                listContainer = new ListContainer();
+                add(listContainer, LEFT, AFTER + 30, FILL, FILL);
+
+                for (Product product : productsList) {
+                    ProductTile productTile = new ProductTile(
+                            product.getId(),
+                            product.getName(),
+                            product.getDescription(),
+                            product.getPrice()
+                    );
+                    listContainer.addContainer(productTile);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public void onEvent(Event event) {
-        if (event.type == ControlEvent.PRESSED && event.target == productTile) {
-            for (int i = 0; i < 10; i++) {
-                if (((Control) event.target).appId == i) {
-                    MainWindow.getMainWindow().swap(new EditProductScreen(new ProductScreen(), 1L));
+        if (event.type == ControlEvent.PRESSED) {
+            if (((Control) event.target).appId == 999) {
+                try {
+                    MainWindow.getMainWindow().swap(new HomeScreen());
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (((Control) event.target).appId == 6) {
+                int indexSelectedItem = listContainer.getSelectedIndex();
+                try {
+                    Product product = productsList.get(indexSelectedItem);
+                    productController.deleteProduct(product.getId());
+                    listContainer.remove(listContainer.getContainer(indexSelectedItem));
+                    MainWindow.getMainWindow().swap(new ProductScreen());
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (((Control) event.target).appId == 7) {
+                int indexSelectedItem = listContainer.getSelectedIndex();
+                try {
+                    Product product = productController.listarProdutos().get(indexSelectedItem);
+                    MainWindow.getMainWindow().swap(new EditProductScreen(this, product.getId()));
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }

@@ -5,7 +5,6 @@ import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.Button;
 import totalcross.ui.Container;
-import totalcross.ui.Control;
 import totalcross.ui.MainWindow;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.Event;
@@ -15,27 +14,29 @@ import totalcross.ui.image.ImageException;
 
 public class MainButton extends Container {
     private final String pathImg;
-    private final String texto;
-    private final Container containerAlvo;
+    private final String text;
+    private final Container toContainer;
 
-    public MainButton(String path, String texto, Container containerAlvo) {
+    private Button addButton;
+
+    public MainButton(String path, String text, Container toContainer) {
         this.pathImg = path;
-        this.texto = texto;
-        this.containerAlvo = containerAlvo;
+        this.text = text;
+        this.toContainer = toContainer;
     }
 
     @Override
     public void initUI() {
         try {
-            Button adicionarBotao = new Button(
-                    this.texto,
+            addButton = new Button(
+                    this.text,
                     new Image(this.pathImg).getScaledInstance(30, 30),
                     RIGHT,
                     28);
-            adicionarBotao.setBackColor(Variables.PRIMARY_COLOR);
-            adicionarBotao.setForeColor(Color.WHITE);
-            adicionarBotao.appId = 1;
-            add(adicionarBotao, 0, 0, FILL, FILL);
+            addButton.setBackColor(Variables.PRIMARY_COLOR);
+            addButton.setForeColor(Color.WHITE);
+            addButton.appId = -123;
+            add(addButton, 0, 0, FILL, FILL);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
         }
@@ -43,11 +44,10 @@ public class MainButton extends Container {
 
     @Override
     public void onEvent(Event event) {
-        switch (event.type) {
-            case ControlEvent.PRESSED:
-                if (((Control) event.target).appId == 1) {
-                    MainWindow.getMainWindow().swap(this.containerAlvo);
-                }
+        if (event.type == ControlEvent.PRESSED && event.target instanceof Button) {
+            if (event.target == addButton) {
+                MainWindow.getMainWindow().swap(this.toContainer);
+            }
         }
     }
 }

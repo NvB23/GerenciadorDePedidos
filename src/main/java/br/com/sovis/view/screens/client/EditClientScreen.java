@@ -1,53 +1,112 @@
 package br.com.sovis.view.screens.client;
 
-import br.com.sovis.view.partials.client.ContentFieldClient;
-import br.com.sovis.view.partials.common.TabBar;
-import br.com.sovis.view.screens.order.HomeScreen;
-import totalcross.ui.Container;
+import br.com.sovis.controller.ClientController;
+import br.com.sovis.exception.ButtonException;
+import br.com.sovis.model.Client;
+import br.com.sovis.view.style.Variables;
+import totalcross.io.IOException;
+import totalcross.ui.*;
+import totalcross.ui.event.ControlEvent;
+import totalcross.ui.event.Event;
+import totalcross.ui.gfx.Color;
+import totalcross.ui.image.Image;
+import totalcross.ui.image.ImageException;
 
-import java.util.HashMap;
+import java.sql.SQLException;
 
 public class EditClientScreen extends Container {
-    private final Container containerDeVolta;
-    private final Long idParaEditar;
+    private final Container toContainer;
+    private final Client clientEdit;
+    private final ClientController clientController = new ClientController();
+    private Edit nameEdit, emailEdit, phoneEdit;
 
-    private String nomeAlterado;
-    private String emailAlterado;
-    private String telefoneAlterado;
-
-    public EditClientScreen(Container containerDeVolta, Long idParaEditar) {
-        this.containerDeVolta = containerDeVolta;
-        this.idParaEditar = idParaEditar;
+    public EditClientScreen(Container toContainer, Long idToEdit) throws SQLException {
+        this.toContainer = toContainer;
+        this.clientEdit = clientController.getClientById(idToEdit);
         setRect(0, 0, FILL, FILL);
     }
 
     @Override
     public void initUI() {
-        HashMap<String, Container> saveBotao = new HashMap<>();
-        saveBotao.put("save.png", editarCliente());
-        add(new TabBar(new HomeScreen(), "Editar Cliente", saveBotao), 0, 0, FILL, PARENTSIZE + 8);
+        Container tabBar = new Container();
+        tabBar.setBackColor(Variables.PRIMARY_COLOR);
+        tabBar.setRect(0,0, FILL, PARENTSIZE + 8);
 
-        // Recupera o cliente pelo id informado e depois passa para os campos
+        try {
+            Button backButton = new Button(new Image("back-arrow.png").getScaledInstance(20, 20));
+            backButton.setBackColor(Variables.PRIMARY_COLOR);
+            backButton.appId = 999;
+            tabBar.add(backButton, LEFT, TOP);
+        } catch (ImageException | IOException e) {
+            throw new ButtonException(e);
+        }
 
-        ContentFieldClient contentFieldClient = new ContentFieldClient("Nau", "naum@emai.c", "3675647678");
+        Label titleLabel = new Label("Editar Cliente");
+        titleLabel.setForeColor(Color.WHITE);
+        tabBar.add(titleLabel,  AFTER + 8, CENTER);
 
-        nomeAlterado = contentFieldClient.getNomeAlterado();
-        emailAlterado = contentFieldClient.getEmailAlterado();
-        telefoneAlterado = contentFieldClient.getTelefoneAlterado();
+        Button saveButton;
+        try {
+            saveButton = new Button(new Image("save.png").getScaledInstance(30, 30));
+        } catch (ImageException | IOException e) {
+            throw new ButtonException(e);
+        }
 
-        add(contentFieldClient, 0, TOP + 80, FILL, FILL);
+        saveButton.setBackColor(Variables.PRIMARY_COLOR);
+        saveButton.appId = 5;
+        tabBar.add(saveButton, RIGHT, CENTER);
+
+        add(tabBar);
+
+        Label nameLabel = new Label("Nome do Cliente");
+        nameLabel.setForeColor(Variables.SECOND_COLOR);
+        add(nameLabel, PARENTSIZE + 50, TOP + 60, PARENTSIZE + 90, PREFERRED);
+        nameEdit = new Edit();
+        nameEdit.setForeColor(Variables.PRIMARY_COLOR);
+        nameEdit.setText(clientEdit.getName());
+        add(nameEdit, CENTER, AFTER + 5, PARENTSIZE + 90, PREFERRED - 20);
+
+        Label emailLabel = new Label("Email do Cliente");
+        emailLabel.setForeColor(Variables.SECOND_COLOR);
+        add(emailLabel, PARENTSIZE + 50, AFTER + 30 , PARENTSIZE + 90, PREFERRED);
+        emailEdit = new Edit();
+        emailEdit.setForeColor(Variables.PRIMARY_COLOR);
+        emailEdit.setText(clientEdit.getEmail());
+        add(emailEdit, CENTER, AFTER + 5, PARENTSIZE + 90, PREFERRED - 20);
+
+        Label phoneLabel = new Label("Telefone do Cliente");
+        phoneLabel.setForeColor(Variables.SECOND_COLOR);
+        add(phoneLabel, PARENTSIZE + 50, AFTER + 30 , PARENTSIZE + 90, PREFERRED);
+        phoneEdit = new Edit("99 99999-9999");
+        phoneEdit.setValidChars("0123456789");
+        phoneEdit.setForeColor(Variables.PRIMARY_COLOR);
+        phoneEdit.setText(clientEdit.getPhone());
+        phoneEdit.setMode(Edit.NORMAL, true);
+        add(phoneEdit, CENTER, AFTER + 5, PARENTSIZE + 90, PREFERRED - 20);
     }
 
-    private Container editarCliente() {
-        // Recupera o cliente pelo id e altera a tabela através do controller
-        System.out.println(idParaEditar);
+    @Override
+    public void onEvent(Event event) {
+        if (event.type == ControlEvent.PRESSED && event.target instanceof Button) {
+            Control control = (Control) event.target;
 
-        // Dados de modificação
-        System.out.println(nomeAlterado);
-        System.out.println(emailAlterado);
-        System.out.println(telefoneAlterado);
+            if (control.appId == 999) {
+                MainWindow.getMainWindow().swap(this.toContainer);
+            }
 
-        // validação e operação
-        return this.containerDeVolta;
+            if (control.appId == 5) {
+                try {
+                    editClient();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+    private void editClient() throws SQLException {
+        Client client = new Client(nameEdit.getText(), emailEdit.getText(), phoneEdit.getText());
+        clientController.updateClient(clientEdit.getId(), client);
+        MainWindow.getMainWindow().swap(new ClientScreen());
     }
 }

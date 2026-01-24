@@ -2,42 +2,44 @@ package br.com.sovis.model;
 
 public class Product {
     private Long id;
-    private String nome;
-    private String descricao;
-    private Double preco;
+    private final String name;
+    private String description;
+    private Double price;
 
-    public Product(Long id, String nome, String descricao, Double preco) {
+    public Product(Long id, String name, String description, Double price) {
         this.id = id;
-        this.nome = nome;
-        this.descricao = descricao;
-        this.preco = preco;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+    }
+
+    public Product(String name, String description, Double price) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getNome() {
-        return nome;
+    public String getName() {
+        return name;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public String getDescription() {
+        return description;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public Double getPrice() {
+        return price;
     }
 
-    public Double getPreco() {
-        return preco;
-    }
-
-    public void setPreco(Double preco) {
-        this.preco = preco;
+    public void setPrice(Double price) {
+        this.price = price;
     }
 }

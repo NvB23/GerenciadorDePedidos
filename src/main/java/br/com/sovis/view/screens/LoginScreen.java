@@ -1,20 +1,27 @@
 package br.com.sovis.view.screens;
 
+import br.com.sovis.controller.Authentication;
+import br.com.sovis.exception.AuthenticationException;
 import br.com.sovis.view.screens.order.HomeScreen;
 import br.com.sovis.view.style.Variables;
 import totalcross.ui.*;
 import totalcross.ui.Button;
 import totalcross.ui.Container;
 import totalcross.ui.Label;
+import totalcross.ui.dialog.MessageBox;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.Event;
-import totalcross.ui.event.EventHandler;
-import totalcross.ui.event.PressListener;
 import totalcross.ui.font.Font;
 import totalcross.ui.gfx.Color;
 
+import java.sql.SQLException;
+
 
 public class LoginScreen extends Container {
+    Button enterButton;
+    Edit emailEdit = new Edit();
+    Edit passwordEdit = new Edit();
+    Authentication authentication = new Authentication();
 
     public LoginScreen() {
         setBackColor(Variables.SECOND_COLOR);
@@ -31,32 +38,45 @@ public class LoginScreen extends Container {
         Label emailLabel = new Label("Email");
         emailLabel.setForeColor(Color.WHITE);
         add(emailLabel, PARENTSIZE + 20, AFTER + 100);
-        Edit emailEdit = new Edit();
         emailEdit.setForeColor(Variables.PRIMARY_COLOR);
         add(emailEdit, CENTER, AFTER + 5, PARENTSIZE + 80, PREFERRED - 20);
 
-        Label senhaLabel = new Label("Senha");
-        senhaLabel.setForeColor(Color.WHITE);
-        add(senhaLabel, PARENTSIZE + 20, AFTER + 50);
-        Edit senhaEdit = new Edit();
-        senhaEdit.setForeColor(Variables.PRIMARY_COLOR);
-        add(senhaEdit, CENTER, AFTER + 5, PARENTSIZE + 80, PREFERRED - 20);
-        senhaEdit.setMode(Edit.PASSWORD);
+        Label passwordLabel = new Label("Senha");
+        passwordLabel.setForeColor(Color.WHITE);
+        add(passwordLabel, PARENTSIZE + 20, AFTER + 50);
+        passwordEdit.setForeColor(Variables.PRIMARY_COLOR);
+        add(passwordEdit, CENTER, AFTER + 5, PARENTSIZE + 80, PREFERRED - 20);
+        passwordEdit.setMode(Edit.PASSWORD);
 
-        Button entrarBotao = new Button("Entrar");
-        entrarBotao.setBackColor(Variables.PRIMARY_COLOR);
-        entrarBotao.setForeColor(Color.WHITE);
-        add(entrarBotao, CENTER, AFTER + 50, PARENTSIZE + 80, PREFERRED);
-        entrarBotao.addPressListener(new PressListener() {
-            @Override
-            public void controlPressed(ControlEvent controlEvent) {
-                MainWindow.getMainWindow().swap(new HomeScreen());
-            }
-        });
+        enterButton = new Button("Entrar");
+        enterButton.setBackColor(Variables.PRIMARY_COLOR);
+        enterButton.setForeColor(Color.WHITE);
+        add(enterButton, CENTER, AFTER + 50, PARENTSIZE + 80, PREFERRED);
     }
 
     @Override
-    public <H extends EventHandler> void onEvent(Event<H> event) {
+    public void onEvent(Event event) {
+        switch (event.type) {
+            case ControlEvent.PRESSED:
+                if (event.target == enterButton) {
+                    try {
+                        boolean success = authentication.login(emailEdit.getValue(), passwordEdit.getValue());
+                        if (emailEdit.getText().isEmpty() || passwordEdit.getText().isEmpty()) {
+                            new MessageBox("Credenciais inválidas!",
+                                    "Campos vazios.").popup();
+                            break;
+                        }
 
+                        if (!success) {
+                            new MessageBox("Credenciais inválidas!",
+                                    "Erro ao acessar a conta! Verifique suas credenciais.").popup();
+                        } else {
+                            MainWindow.getMainWindow().swap(new HomeScreen());
+                        }
+                    } catch (SQLException e) {
+                        throw new AuthenticationException(e);
+                    }
+                }
+        }
     }
 }

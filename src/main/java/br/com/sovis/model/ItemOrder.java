@@ -1,54 +1,52 @@
 package br.com.sovis.model;
 
-import java.time.LocalDateTime;
-
 public class ItemOrder {
     private Long id;
-    private Long idPedido;
-    private Long idProduto;
-    private double valorItem;
-    private final String dataDoPedido = LocalDateTime.now().toLocalDate().toString();
+    private Order order;
+    private Product product;
+    private final Integer quantity;
+    private final double itemValue;
 
-    public ItemOrder(Long id, Long idPedido, Long idProduto, double valorItem) {
+    public ItemOrder(Long id, Order order, Product product, Integer quantity, double itemValue) {
         this.id = id;
-        this.idPedido = idPedido;
-        this.idProduto = idProduto;
-        this.valorItem = valorItem;
+        this.order = order;
+        this.product = product;
+        this.quantity = quantity;
+        this.itemValue = itemValue;
+    }
+
+    public ItemOrder(Order order, Product product, Integer quantity, double itemValue) {
+        this.order = order;
+        this.product = product;
+        this.quantity = quantity;
+        this.itemValue = itemValue;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Order getOrder() {
+        return order;
     }
 
-    public Long getIdPedido() {
-        return idPedido;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
-    public void setIdPedido(Long idPedido) {
-        this.idPedido = idPedido;
+    public Product getProduct() {
+        return product;
     }
 
-    public Long getIdProduto() {
-        return idProduto;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
-    public void setIdProduto(Long idProduto) {
-        this.idProduto = idProduto;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public double getValorItem() {
-        return valorItem;
-    }
-
-    public void setValorItem(double valorItem) {
-        this.valorItem = valorItem;
-    }
-
-    public String getDataDoPedido() {
-        return dataDoPedido;
+    public double getItemValue() {
+        return itemValue;
     }
 }

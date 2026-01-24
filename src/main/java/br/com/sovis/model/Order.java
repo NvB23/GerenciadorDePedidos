@@ -1,43 +1,57 @@
 package br.com.sovis.model;
 
-import br.com.sovis.model.enums.StatusPedido;
+import br.com.sovis.model.enums.OrderStatus;
 
 import java.time.LocalDateTime;
 
 public class Order {
-    private final Long id;
-    private final Long idCliente;
-    private Double valorTotal;
-    private StatusPedido statusPedido;
+    private Long id;
+    private final Client client;
+    private Double totalValue;
+    private OrderStatus orderStatus = OrderStatus.PENDENTE;
+    private String orderDate = LocalDateTime.now().toLocalDate().toString();
 
-    public Order(Long id, Long idCliente, Double valorTotal, StatusPedido statusPedido) {
+    public Order(Client client) {
+        this.client = client;
+    }
+
+    public Order(Long id, Client client, Double totalValue, String orderDate, OrderStatus orderStatus) {
         this.id = id;
-        this.idCliente = idCliente;
-        this.valorTotal = valorTotal;
-        this.statusPedido = statusPedido;
+        this.client = client;
+        this.totalValue = totalValue;
+        this.orderStatus = orderStatus;
+        this.orderDate = orderDate;
     }
 
     public Long getId() {
         return id;
     }
 
-    public Long getIdCliente() {
-        return idCliente;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Double getValorTotal() {
-        return valorTotal;
+    public Client getClient() {
+        return client;
     }
 
-    public void setValorTotal(Double valorTotal) {
-        this.valorTotal = valorTotal;
+    public Double getTotalValue() {
+        return totalValue;
     }
 
-    public StatusPedido getStatusPedido() {
-        return statusPedido;
+    public void setTotalValue(Double totalValue) {
+        this.totalValue = totalValue;
     }
 
-    public void setStatusPedido(StatusPedido statusPedido) {
-        this.statusPedido = statusPedido;
+    public OrderStatus getStatusPedido() {
+        return orderStatus;
+    }
+
+    public void setStatusPedido(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public String getOrderDate() {
+        return orderDate;
     }
 }

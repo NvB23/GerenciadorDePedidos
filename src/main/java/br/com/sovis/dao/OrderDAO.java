@@ -45,7 +45,7 @@ public class OrderDAO {
         return id;
     }
 
-    public boolean updateOrder(String id, String idClient, String totalValue, String orderDate, String orderStatus) throws SQLException {
+    public Long updateOrder(String id, String idClient, String totalValue, String orderDate, String orderStatus) throws SQLException {
         Connection connection = Database.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "UPDATE pedido SET idCliente = ?, valorTotal = ?, dataPedido = ?, statusPedido = ? WHERE id = ?;");
@@ -57,12 +57,16 @@ public class OrderDAO {
         preparedStatement.setString(5, id);
 
         int i = preparedStatement.executeUpdate();
+
+        if (i <= 0) {
+            preparedStatement.close();
+            connection.close();
+            return null;
+        }
+
         preparedStatement.close();
         connection.close();
-
-        if (i > 0) return true;
-        else if (i < 0) return false;
-        return false;
+        return Long.parseLong(id);
     }
 
     public void deleteOrder(String id) throws SQLException {
@@ -137,5 +141,18 @@ public class OrderDAO {
         connection.close();
 
         return null;
+    }
+
+    public void updateStatusOrder(String idPassed, String orderStatus) throws SQLException {
+        Connection connection = Database.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "UPDATE pedido SET statusPedido = ? WHERE id = ?;");
+        preparedStatement.setString(1, orderStatus);
+        preparedStatement.setString(2, idPassed);
+
+        preparedStatement.executeUpdate();
+
+        preparedStatement.close();
+        connection.close();
     }
 }

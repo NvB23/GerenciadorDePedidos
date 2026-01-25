@@ -1,20 +1,37 @@
 package br.com.sovis.view.partials.order;
 
+import br.com.sovis.controller.ItemOrderController;
+import br.com.sovis.model.ItemOrder;
 import br.com.sovis.model.Product;
 import br.com.sovis.view.style.Variables;
 import totalcross.ui.ComboBox;
 import totalcross.ui.Container;
 import totalcross.ui.Edit;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ItemOrderTile extends Container {
     private final List<Product> productList;
-    Edit quantityEdit;
-    ComboBox comboBox;
+    private Edit quantityEdit;
+    private ComboBox comboBox;
+
+    private String quantity;
+    private String product;
+
 
     public ItemOrderTile(List<Product> productList) {
         this.productList = productList;
+        this.quantity = "";
+        this.product = "";
+        setRect(0, 0, FILL, PREFERRED);
+    }
+
+    public ItemOrderTile(List<Product> productList, String quantity, String product) throws SQLException {
+        this.productList = productList;
+        this.quantity = quantity;
+        this.product = product;
         setRect(0, 0, FILL, PREFERRED);
     }
 
@@ -27,9 +44,11 @@ public class ItemOrderTile extends Container {
         }
         comboBox = new ComboBox(productsName);
         comboBox.setForeColor(Variables.PRIMARY_COLOR);
+        comboBox.setValue(product);
 
         quantityEdit = new Edit();
         quantityEdit.setValidChars("0123456789.,");
+        quantityEdit.setText(quantity);
 
         add(quantityEdit, LEFT + 8, CENTER, PARENTSIZE + 20, PREFERRED - 14);
         add(comboBox, AFTER + 8, CENTER, PARENTSIZE + 70, PREFERRED);

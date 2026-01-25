@@ -41,3 +41,7 @@ nbdist/
 *.zip
 *.tar.gz
 hs_err_pid*
+
+# Database
+# -------------
+*.db

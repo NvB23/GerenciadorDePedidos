@@ -3,12 +3,14 @@ package br.com.sovis.view.screens.order;
 import br.com.sovis.controller.OrderController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Order;
+import br.com.sovis.model.enums.OrderStatus;
 import br.com.sovis.view.partials.common.MainButton;
 import br.com.sovis.view.partials.order.OrderTile;
 import br.com.sovis.view.screens.product.ProductScreen;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
+import totalcross.ui.dialog.MessageBox;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.Event;
 import br.com.sovis.view.screens.client.ClientScreen;
@@ -66,8 +68,8 @@ public class HomeScreen extends Container {
         orderTitle.setFont(Font.getFont(true, 15));
         add(orderTitle, LEFT + 10, AFTER + 30);
 
-        Button deleteButton;
-        Button editButton;
+        Button deleteButton ,editButton, closeButton;
+
         try {
             deleteButton = new Button(new Image("trash.png").getScaledInstance(20,20));
             deleteButton.setBackColor(Variables.PRIMARY_COLOR);
@@ -75,11 +77,15 @@ public class HomeScreen extends Container {
             editButton = new Button(new Image("edit.png").getScaledInstance(20,20));
             editButton.setBackColor(Variables.PRIMARY_COLOR);
             editButton.appId = 3;
+            closeButton = new Button(new Image("padlock.png").getScaledInstance(20,20));
+            closeButton.setBackColor(Variables.PRIMARY_COLOR);
+            closeButton.appId = 4;
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
         }
         add(deleteButton, RIGHT - 10, SAME - 5, PREFERRED - 5, PREFERRED - 5);
         add(editButton, BEFORE - 10, SAME, PREFERRED - 5, PREFERRED - 5);
+        add(closeButton, BEFORE - 10, SAME, PREFERRED - 5, PREFERRED - 5);
 
         if (orderList.isEmpty()) {
             Label noClientsLabel = new Label("Sem pedidos cadastrados");
@@ -129,7 +135,19 @@ public class HomeScreen extends Container {
                 int indexSelectedItem = listContainer.getSelectedIndex();
                 try {
                     Order order = orderController.getOrders().get(indexSelectedItem);
-                    MainWindow.getMainWindow().swap(new EditOrderScreen(this, order.getId()));
+                    if (order.getStatusPedido().equals(OrderStatus.FECHADO)) new MessageBox("Pedido Fechado", "Não pode editar um pedido fechado.").popup();
+                    else MainWindow.getMainWindow().swap(new EditOrderScreen(this, order.getId()));
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            if (((Control) event.target).appId == 4) {
+                int indexSelectedItem = listContainer.getSelectedIndex();
+                try {
+                    Order order = orderController.getOrders().get(indexSelectedItem);
+                    orderController.updateOrderStatus(order.getId(), OrderStatus.FECHADO);
+                    MainWindow.getMainWindow().swap(new HomeScreen());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }

@@ -81,6 +81,22 @@ public class ItemOrderDAO {
         return false;
     }
 
+    public boolean deleteItemOrderByIdOrder(String id) throws SQLException {
+        Connection connection = Database.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "DELETE FROM item_pedido WHERE idPedido = ?;");
+
+        preparedStatement.setString(1, id);
+
+        int i = preparedStatement.executeUpdate();
+        preparedStatement.close();
+        connection.close();
+
+        if (i > 0) return true;
+        else if (i < 0) return false;
+        return false;
+    }
+
     public ArrayList<ItemOrder> getItemOrders() throws SQLException {
         ArrayList<ItemOrder> itemOrders = new ArrayList<>();
         Connection connection = Database.getConnection();

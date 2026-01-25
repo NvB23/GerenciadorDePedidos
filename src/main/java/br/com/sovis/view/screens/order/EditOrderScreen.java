@@ -1,10 +1,12 @@
 package br.com.sovis.view.screens.order;
 
 import br.com.sovis.controller.ClientController;
+import br.com.sovis.controller.ItemOrderController;
 import br.com.sovis.controller.OrderController;
 import br.com.sovis.controller.ProductController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Client;
+import br.com.sovis.model.ItemOrder;
 import br.com.sovis.model.Order;
 import br.com.sovis.model.Product;
 import br.com.sovis.view.partials.order.ItemOrderTile;
@@ -30,11 +32,13 @@ public class EditOrderScreen extends Container {
     ClientController clientController = new ClientController();
     ProductController productController = new ProductController();
     OrderController orderController = new OrderController();
+    private ItemOrderController itemOrderController = new ItemOrderController();
 
     private final ArrayList<Client> clients = clientController.getClients();
     private ArrayList<Product> products;
+    private ArrayList<ItemOrder> itemOrders;
     ListContainer listContainer;
-    ArrayList<ItemOrderTile> itens = new ArrayList<>();
+    ArrayList<ItemOrderTile> items = new ArrayList<>();
     ItemOrderTile itemOrderTile;
 
     public EditOrderScreen(Container toContainer, Long idOrderToEdit) throws SQLException {
@@ -95,7 +99,32 @@ public class EditOrderScreen extends Container {
         Label emailLabel = new Label("Items do Pedido");
         emailLabel.setForeColor(Variables.SECOND_COLOR);
         add(emailLabel, PARENTSIZE + 50, AFTER + 40 , PARENTSIZE + 90, PREFERRED);
+
         listContainer = new ListContainer();
+        listContainer.setRect(LEFT, PARENTSIZE + 70, FILL, PARENTSIZE + 60);
+        add(listContainer);
+
+        try {
+            products = productController.listarProdutos();
+            itemOrders = itemOrderController.getItemOrdersById(order.getId());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (ItemOrder itemOrder : itemOrders) {
+            Product productEdit = itemOrder.getProduct();
+            ItemOrderTile itemOrderTileEdit;
+            try {
+                itemOrderTileEdit = new ItemOrderTile(
+                        products,
+                        String.valueOf(itemOrder.getQuantity()),
+                        productEdit.getId() + " " + productEdit.getName());
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            items.add(itemOrderTileEdit);
+            listContainer.addContainer(itemOrderTileEdit);
+        }
 
         try {
             Button addButton = new Button(new Image("add.png").getScaledInstance(30,30));
@@ -105,13 +134,9 @@ public class EditOrderScreen extends Container {
             addButton.addPressListener(new PressListener() {
                 @Override
                 public void controlPressed(ControlEvent controlEvent) {
-                    try {
-                        products = productController.listarProdutos();
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
+
                     itemOrderTile = new ItemOrderTile(products);
-                    itens.add(itemOrderTile);
+                    items.add(itemOrderTile);
                     listContainer.addContainer(itemOrderTile);
                 }
             });
@@ -120,7 +145,6 @@ public class EditOrderScreen extends Container {
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
         }
-        add(listContainer, LEFT, AFTER + 20, FILL, FILL);
     }
 
     private int findIndexByClientId(Long id) {
@@ -152,20 +176,19 @@ public class EditOrderScreen extends Container {
     }
 
     private void editOrder() throws SQLException {
-        Client cliente = clients.get(clientsComboBox.getSelectedIndex());
-        HashMap<Product, Integer> mapProductQuantity = new HashMap<>();
+        Client client = clients.get(clientsComboBox.getSelectedIndex());
+        HashMap<Long, Integer> mapProductQuantity = new HashMap<>();
 
-        for (ItemOrderTile item : itens) {
+        for (ItemOrderTile item : items) {
             if (item.getQuantidade() > 0) {
-                mapProductQuantity.put(item.getProduto(), item.getQuantidade());
+                mapProductQuantity.put(item.getProduto().getId(), item.getQuantidade());
             }
         }
 
         if (products == null || products.isEmpty()) throw new IllegalStateException("Pedido não poder ser editado sem itens");
 
-        Order orderEdit = new Order(cliente);
-
-        orderController.updateOrder(orderEdit.getId(), orderEdit, mapProductQuantity);
+        order.setClient(client);
+        orderController.updateOrder(order.getId(), order, mapProductQuantity);
         MainWindow.getMainWindow().swap(new HomeScreen());
     }
 }

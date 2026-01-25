@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public class Order {
     private Long id;
-    private final Client client;
+    private Client client;
     private Double totalValue;
     private OrderStatus orderStatus = OrderStatus.PENDENTE;
     private String orderDate = LocalDateTime.now().toLocalDate().toString();
@@ -33,6 +33,10 @@ public class Order {
 
     public Client getClient() {
         return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public Double getTotalValue() {

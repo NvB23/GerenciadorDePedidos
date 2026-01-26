@@ -19,8 +19,8 @@ public class ItemOrderTileWithListContainerItem extends ListContainer.Item {
     private final String product;
 
 
-    public ItemOrderTileWithListContainerItem(List<Product> productList) {
-
+    public ItemOrderTileWithListContainerItem(List<Product> productList, ListContainer.Layout layout) {
+        super(layout);
         this.productList = productList;
         this.quantity = "";
         this.product = "";

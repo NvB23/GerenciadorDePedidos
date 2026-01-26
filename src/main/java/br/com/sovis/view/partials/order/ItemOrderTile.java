@@ -1,16 +1,12 @@
 package br.com.sovis.view.partials.order;
 
-import br.com.sovis.controller.ItemOrderController;
-import br.com.sovis.model.ItemOrder;
 import br.com.sovis.model.Product;
 import br.com.sovis.view.style.Variables;
 import totalcross.ui.ComboBox;
-import totalcross.ui.Container;
 import totalcross.ui.Edit;
 import totalcross.ui.ScrollContainer;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ItemOrderTile extends ScrollContainer {
@@ -57,11 +53,11 @@ public class ItemOrderTile extends ScrollContainer {
         add(comboBox, AFTER + 8, CENTER, PARENTSIZE + 70, PREFERRED);
     }
 
-    public Integer getQuantidade() {
+    public Integer getQuantity() {
         return quantityEdit.getText().isEmpty() ? 0 : Integer.parseInt(quantityEdit.getText());
     }
 
-    public Product getProduto() {
+    public Product getProduct() {
         return productList.get(comboBox.getSelectedIndex());
     }
 }

@@ -22,7 +22,6 @@ import totalcross.ui.image.ImageException;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class EditOrderScreen extends Container {
     private final Container toContainer;
@@ -177,18 +176,26 @@ public class EditOrderScreen extends Container {
 
     private void editOrder() throws SQLException {
         Client client = clients.get(clientsComboBox.getSelectedIndex());
-        HashMap<Long, Integer> mapProductQuantity = new HashMap<>();
+        ArrayList<ItemOrder> newItems = new ArrayList<>();
 
-        for (ItemOrderTile item : items) {
-            if (item.getQuantidade() > 0) {
-                mapProductQuantity.put(item.getProduto().getId(), item.getQuantidade());
-            }
+        for (ItemOrderTile itemOrderTile : items) {
+            Product product = itemOrderTile.getProduct();
+
+            ItemOrder itemOrder = new ItemOrder(
+                    order,
+                    product,
+                    itemOrderTile.getQuantity(),
+                    product.getPrice() * itemOrderTile.getQuantity()
+            );
+
+            newItems.add(itemOrder);
         }
+
 
         if (products == null || products.isEmpty()) throw new IllegalStateException("Pedido não poder ser editado sem itens");
 
         order.setClient(client);
-        orderController.updateOrder(order.getId(), order, mapProductQuantity);
+        orderController.updateOrder(order.getId(), order, newItems);
         MainWindow.getMainWindow().swap(new HomeScreen());
     }
 }

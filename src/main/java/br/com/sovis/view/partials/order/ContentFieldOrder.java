@@ -5,6 +5,7 @@ import br.com.sovis.controller.ClientController;
 import br.com.sovis.controller.ProductController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Client;
+import br.com.sovis.model.ItemOrder;
 import br.com.sovis.model.Product;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
@@ -16,7 +17,6 @@ import totalcross.ui.image.ImageException;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ContentFieldOrder extends Container {
     private final ClientController clientController = new ClientController();
@@ -24,14 +24,14 @@ public class ContentFieldOrder extends Container {
 
     ComboBox clientsComboBox;
 
-    ItemOrderTileWithListContainerItem itemOrderTile;
+    ItemOrderTile itemOrderTile;
 
     private final ArrayList<Client> clients = clientController.getClients();
 
     private ArrayList<Product> products;
 
     ListContainer listContainer;
-    ArrayList<ItemOrderTileWithListContainerItem> items = new ArrayList<>();
+    ArrayList<ItemOrderTile> items = new ArrayList<>();
 
     public ContentFieldOrder() throws SQLException {}
 
@@ -74,7 +74,9 @@ public class ContentFieldOrder extends Container {
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
-                    itemOrderTile = new ItemOrderTileWithListContainerItem(products);
+//                    ListContainer.Layout layout = listContainer.getLayout();
+//                    itemOrderTile = new ItemOrderTileWithListContainerItem(products, layout);
+                    itemOrderTile = new ItemOrderTile(products);
                     items.add(itemOrderTile);
                     listContainer.addContainer(itemOrderTile);
                 }
@@ -105,15 +107,19 @@ public class ContentFieldOrder extends Container {
         return clients.get(idSelectedClients);
     }
 
-    public HashMap<Product, Integer> getProducts() {
-        HashMap<Product, Integer> mapProductQuantity = new HashMap<>();
+    public ArrayList<ItemOrder> getItemOrders() {
+        ArrayList<ItemOrder> itemOrders = new ArrayList<>();
 
-        for (ItemOrderTileWithListContainerItem item : items) {
-            if (item.getQuantidade() > 0) {
-                mapProductQuantity.put(item.getProduto(), item.getQuantidade());
-            }
+        for (ItemOrderTile item : items) {
+            ItemOrder itemOrder = new ItemOrder(
+                    item.getProduct(),
+                    item.getQuantity(),
+                    item.getProduct().getPrice() * item.getQuantity()
+            );
+
+            itemOrders.add(itemOrder);
         }
-        return mapProductQuantity;
+        return itemOrders;
     }
 
 

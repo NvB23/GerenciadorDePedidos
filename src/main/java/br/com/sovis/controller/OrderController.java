@@ -7,6 +7,7 @@ import br.com.sovis.model.ItemOrder;
 import br.com.sovis.model.Order;
 import br.com.sovis.model.Product;
 import br.com.sovis.model.enums.OrderStatus;
+import br.com.sovis.view.partials.order.OrderTile;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,10 +19,10 @@ public class OrderController {
     private final ProductDAO productDAO = new ProductDAO();
     private final ItemOrderDAO itemOrderDAO = new ItemOrderDAO();
 
-    public void createOrder(Order order, HashMap<Product, Integer> productsQuantity) throws SQLException {
+    public void createOrder(Order order, ArrayList<ItemOrder> itemOrders) throws SQLException {
         Double totalValue = 0.0;
-        for (Map.Entry<Product, Integer> productQuant : productsQuantity.entrySet()) {
-            totalValue += productQuant.getKey().getPrice() * productQuant.getValue();
+        for (ItemOrder itemOrder : itemOrders) {
+            totalValue += itemOrder.getItemValue();
         }
 
         Long idOrderInserted = orderDAO.createOrder(
@@ -38,30 +39,23 @@ public class OrderController {
         order.setId(idOrderInserted);
         order.setTotalValue(totalValue);
 
-        for (Map.Entry<Product, Integer> produtoQuant : productsQuantity.entrySet()) {
-            ItemOrder itemOrder = new ItemOrder(
-                    order,
-                    produtoQuant.getKey(),
-                    produtoQuant.getValue(),
-                    produtoQuant.getKey().getPrice() * produtoQuant.getValue()
-            );
-
+        for (ItemOrder itemOrder : itemOrders) {
+            itemOrder.setOrder(order);
             boolean itemOrderInserted = itemOrderDAO.createItemOrder(
                     String.valueOf(itemOrder.getOrder().getId()),
                     String.valueOf(itemOrder.getProduct().getId()),
                     String.valueOf(itemOrder.getQuantity()),
                     String.valueOf(itemOrder.getItemValue())
             );
+
             if (!itemOrderInserted) return;
         }
-
     }
 
-    public void updateOrder(Long id, Order order, HashMap<Long, Integer> productsQuantity) throws SQLException {
+    public void updateOrder(Long id, Order order, ArrayList<ItemOrder> itemOrders) throws SQLException {
         Double newTotalValue = 0.0;
-        for (Map.Entry<Long, Integer> productQuant : productsQuantity.entrySet()) {
-            newTotalValue += productDAO.getProductById(
-                    String.valueOf(productQuant.getKey())).getPrice() * productQuant.getValue();
+        for (ItemOrder itemOrder : itemOrders) {
+            newTotalValue += itemOrder.getItemValue();
         }
 
         Long idOrderUpdated = orderDAO.updateOrder(
@@ -80,15 +74,7 @@ public class OrderController {
 
         itemOrderDAO.deleteItemOrderByIdOrder(String.valueOf(order.getId()));
 
-        for (Map.Entry<Long, Integer> productQuant : productsQuantity.entrySet()) {
-            ItemOrder itemOrder = new ItemOrder(
-                    order,
-                    productDAO.getProductById(String.valueOf(productQuant.getKey())),
-                    productQuant.getValue(),
-                    productDAO.getProductById(
-                            String.valueOf(productQuant.getKey())).getPrice() * productQuant.getValue()
-            );
-
+        for (ItemOrder itemOrder : itemOrders) {
             boolean itemOrderUpdated = itemOrderDAO.createItemOrder(
                     String.valueOf(itemOrder.getOrder().getId()),
                     String.valueOf(itemOrder.getProduct().getId()),

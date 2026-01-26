@@ -22,6 +22,12 @@ public class ItemOrder {
         this.itemValue = itemValue;
     }
 
+    public ItemOrder(Product product, Integer quantity, double itemValue) {
+        this.product = product;
+        this.quantity = quantity;
+        this.itemValue = itemValue;
+    }
+
     public Long getId() {
         return id;
     }

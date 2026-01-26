@@ -4,8 +4,8 @@ import br.com.sovis.controller.ClientController;
 import br.com.sovis.controller.OrderController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Client;
+import br.com.sovis.model.ItemOrder;
 import br.com.sovis.model.Order;
-import br.com.sovis.model.Product;
 import br.com.sovis.view.partials.order.ContentFieldOrder;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
@@ -17,7 +17,7 @@ import totalcross.ui.image.Image;
 import totalcross.ui.image.ImageException;
 
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class AddOrderScreen extends Container {
     private ClientController clientController = new ClientController();
@@ -88,13 +88,13 @@ public class AddOrderScreen extends Container {
 
     private void salvarPedido(ContentFieldOrder contentFieldOrder) throws SQLException {
         Client client = contentFieldOrder.getClient();
-        HashMap<Product, Integer> products = contentFieldOrder.getProducts();
+        ArrayList<ItemOrder> itemOrders = contentFieldOrder.getItemOrders();
 
-        if (products == null || products.isEmpty()) throw new IllegalStateException("Pedido não poder ser salvo sem itens");
+        if (itemOrders == null || itemOrders.isEmpty()) throw new IllegalStateException("Pedido não poder ser salvo sem itens");
 
         Order order = new Order(client);
 
-        orderController.createOrder(order, products);
+        orderController.createOrder(order, itemOrders);
         MainWindow.getMainWindow().swap(new HomeScreen());
     }
 }

@@ -24,14 +24,14 @@ public class ContentFieldOrder extends Container {
 
     ComboBox clientsComboBox;
 
-    ItemOrderTile itemOrderTile;
+    ItemOrderTileWithListContainerItem itemOrderTile;
 
     private final ArrayList<Client> clients = clientController.getClients();
 
     private ArrayList<Product> products;
 
     ListContainer listContainer;
-    ArrayList<ItemOrderTile> items = new ArrayList<>();
+    ArrayList<ItemOrderTileWithListContainerItem> items = new ArrayList<>();
 
     public ContentFieldOrder() throws SQLException {}
 
@@ -74,7 +74,7 @@ public class ContentFieldOrder extends Container {
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
-                    itemOrderTile = new ItemOrderTile(products);
+                    itemOrderTile = new ItemOrderTileWithListContainerItem(products);
                     items.add(itemOrderTile);
                     listContainer.addContainer(itemOrderTile);
                 }
@@ -86,13 +86,14 @@ public class ContentFieldOrder extends Container {
                     int selectedItem = listContainer.getSelectedIndex();
                     items.remove(selectedItem);
                     listContainer.remove(listContainer.getContainer(selectedItem));
+                    listContainer.repaintNow();
                 }
             });
 
             add(addButton, RIGHT - 16, AFTER - 35, PREFERRED - 10, PREFERRED - 10);
 
             // Bug de delete aqui!
-            // add(deleteButton, BEFORE - 4, SAME, PREFERRED - 10, PREFERRED - 10);
+            add(deleteButton, BEFORE - 4, SAME, PREFERRED - 10, PREFERRED - 10);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
         }
@@ -107,7 +108,7 @@ public class ContentFieldOrder extends Container {
     public HashMap<Product, Integer> getProducts() {
         HashMap<Product, Integer> mapProductQuantity = new HashMap<>();
 
-        for (ItemOrderTile item : items) {
+        for (ItemOrderTileWithListContainerItem item : items) {
             if (item.getQuantidade() > 0) {
                 mapProductQuantity.put(item.getProduto(), item.getQuantidade());
             }

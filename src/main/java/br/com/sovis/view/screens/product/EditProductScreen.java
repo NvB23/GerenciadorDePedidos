@@ -107,6 +107,6 @@ public class EditProductScreen extends Container {
                 descriptionEdit.getText(),
                 Double.parseDouble(priceEdit.getText()));
         productController.updateProduct(produtoEdit.getId(), product);
-        MainWindow.getMainWindow().swap(toContainer);
+        MainWindow.getMainWindow().swap(new ProductScreen());
     }
 }

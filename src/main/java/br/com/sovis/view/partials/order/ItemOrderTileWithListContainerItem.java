@@ -1,19 +1,16 @@
 package br.com.sovis.view.partials.order;
 
-import br.com.sovis.controller.ItemOrderController;
-import br.com.sovis.model.ItemOrder;
 import br.com.sovis.model.Product;
 import br.com.sovis.view.style.Variables;
 import totalcross.ui.ComboBox;
-import totalcross.ui.Container;
 import totalcross.ui.Edit;
-import totalcross.ui.ScrollContainer;
+import totalcross.ui.ListContainer;
+import totalcross.ui.layout.VBox;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
-public class ItemOrderTile extends ScrollContainer {
+public class ItemOrderTileWithListContainerItem extends ListContainer.Item {
     private final List<Product> productList;
     private Edit quantityEdit;
     private ComboBox comboBox;
@@ -22,16 +19,16 @@ public class ItemOrderTile extends ScrollContainer {
     private final String product;
 
 
-    public ItemOrderTile(List<Product> productList) {
-        super(false);
+    public ItemOrderTileWithListContainerItem(List<Product> productList) {
+
         this.productList = productList;
         this.quantity = "";
         this.product = "";
         setRect(0, 0, FILL, PARENTSIZE + 12);
     }
 
-    public ItemOrderTile(List<Product> productList, String quantity, String product) throws SQLException {
-        super(false);
+    public ItemOrderTileWithListContainerItem(List<Product> productList, String quantity, String product) throws SQLException {
+        super(null);
         this.productList = productList;
         this.quantity = quantity;
         this.product = product;

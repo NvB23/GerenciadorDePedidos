@@ -12,6 +12,7 @@ import totalcross.io.IOException;
 import totalcross.ui.*;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.PressListener;
+import totalcross.ui.gfx.Color;
 import totalcross.ui.image.Image;
 import totalcross.ui.image.ImageException;
 
@@ -24,14 +25,14 @@ public class ContentFieldOrder extends Container {
 
     ComboBox clientsComboBox;
 
-    ItemOrderTileWithListContainerItem itemOrderTile;
+    ItemOrderTile itemOrderTile;
 
     private final ArrayList<Client> clients = clientController.getClients();
 
     private ArrayList<Product> products;
 
     ListContainer listContainer;
-    ArrayList<ItemOrderTileWithListContainerItem> items = new ArrayList<>();
+    ArrayList<ItemOrderTile> items = new ArrayList<>();
 
     public ContentFieldOrder() throws SQLException {}
 
@@ -58,7 +59,7 @@ public class ContentFieldOrder extends Container {
         add(emailLabel, PARENTSIZE + 50, AFTER + 40 , PARENTSIZE + 90, PREFERRED);
 
         listContainer = new ListContainer();
-        ListContainer.Layout layout = listContainer.getLayout(0,2);
+        ListContainer.Layout layout = listContainer.getLayout(0,1);
         layout.setup();
         try {
             Button addButton = new Button(new Image("add.png").getScaledInstance(30,30));
@@ -77,8 +78,7 @@ public class ContentFieldOrder extends Container {
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
-                    itemOrderTile = new ItemOrderTileWithListContainerItem(products, layout);
-                    //itemOrderTile = new ItemOrderTile(products);
+                    itemOrderTile = new ItemOrderTile(products, layout);
                     items.add(itemOrderTile);
                     listContainer.addContainer(itemOrderTile);
                     listContainer.reposition();
@@ -93,25 +93,17 @@ public class ContentFieldOrder extends Container {
 
                     listContainer.removeAll();
 
-                    ItemOrderTileWithListContainerItem[] newItems = new ItemOrderTileWithListContainerItem[items.size()];
-
-                    for (int i = 0; i < newItems.length; i++) {
-                        //Corrigir Posição de Inserção dos itens
-                        //if (items.get(i).getPos().x)
-                        newItems[i] = items.get(i);
+                    for (int i = 0; i < items.size(); i++) {
+                        ItemOrderTile item = items.get(i);
+                        listContainer.add(item, LEFT, i == 0 ? TOP : AFTER, FILL, PARENTSIZE + 40);
                     }
 
-                    listContainer.addContainers(newItems);
-
-                    listContainer.resize();
-                    listContainer.reposition();
-                    listContainer.repaintNow();
+                    repaint();
                 }
             });
 
             add(addButton, RIGHT - 16, AFTER - 35, PREFERRED - 10, PREFERRED - 10);
 
-            // Bug de delete aqui!
             add(deleteButton, BEFORE - 4, SAME, PREFERRED - 10, PREFERRED - 10);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
@@ -127,7 +119,7 @@ public class ContentFieldOrder extends Container {
     public ArrayList<ItemOrder> getItemOrders() {
         ArrayList<ItemOrder> itemOrders = new ArrayList<>();
 
-        for (ItemOrderTileWithListContainerItem item : items) {
+        for (ItemOrderTile item : items) {
             ItemOrder itemOrder = new ItemOrder(
                     item.getProduct(),
                     item.getQuantity(),

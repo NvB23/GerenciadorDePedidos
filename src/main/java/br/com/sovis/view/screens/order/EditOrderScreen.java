@@ -100,6 +100,8 @@ public class EditOrderScreen extends Container {
         add(emailLabel, PARENTSIZE + 50, AFTER + 40 , PARENTSIZE + 90, PREFERRED);
 
         listContainer = new ListContainer();
+        ListContainer.Layout layout = listContainer.getLayout(0,1);
+        layout.setup();
         listContainer.setRect(LEFT, PARENTSIZE + 70, FILL, PARENTSIZE + 60);
         add(listContainer);
 
@@ -117,7 +119,9 @@ public class EditOrderScreen extends Container {
                 itemOrderTileEdit = new ItemOrderTile(
                         products,
                         String.valueOf(itemOrder.getQuantity()),
-                        productEdit.getId() + " " + productEdit.getName());
+                        productEdit.getId() + " " + productEdit.getName(),
+                        layout
+                );
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -130,17 +134,43 @@ public class EditOrderScreen extends Container {
             addButton.setBackColor(Variables.PRIMARY_COLOR);
             addButton.appId = 1212;
 
+            Button deleteButton = new Button(new Image("trash.png").getScaledInstance(30,30));
+            deleteButton.setBackColor(Variables.PRIMARY_COLOR);
+            deleteButton.appId = 1313;
+
             addButton.addPressListener(new PressListener() {
                 @Override
                 public void controlPressed(ControlEvent controlEvent) {
 
-                    itemOrderTile = new ItemOrderTile(products);
+                    itemOrderTile = new ItemOrderTile(products, layout);
                     items.add(itemOrderTile);
                     listContainer.addContainer(itemOrderTile);
                 }
             });
 
+            deleteButton.addPressListener(new PressListener() {
+                @Override
+                public void controlPressed(ControlEvent controlEvent) {
+                    int selectedItem = listContainer.getSelectedIndex();
+
+                    if (selectedItem >= 0 && selectedItem < items.size()) {
+                        items.remove(selectedItem);
+
+                        listContainer.removeAll();
+
+                        for (int i = 0; i < items.size(); i++) {
+                            ItemOrderTile item = items.get(i);
+                            listContainer.add(item, LEFT, i == 0 ? TOP : AFTER, FILL, PARENTSIZE + 40);
+                        }
+
+                        repaint();
+                    }
+                }
+            });
+
             add(addButton, RIGHT - 16, AFTER - 35, PREFERRED - 10, PREFERRED - 10);
+
+            add(deleteButton, BEFORE - 4, SAME, PREFERRED - 10, PREFERRED - 10);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
         }

@@ -58,6 +58,11 @@ public class LoginScreen extends Container {
     public void onEvent(Event event) {
         switch (event.type) {
             case ControlEvent.PRESSED:
+                try {
+                    MainWindow.getMainWindow().swap(new HomeScreen());
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
                 if (event.target == enterButton) {
                     try {
                         boolean success = authentication.login(emailEdit.getValue(), passwordEdit.getValue());

@@ -21,18 +21,20 @@ public class ItemOrderTileWithListContainerItem extends ListContainer.Item {
 
     public ItemOrderTileWithListContainerItem(List<Product> productList, ListContainer.Layout layout) {
         super(layout);
+        this.items = new String[]{"", ""};
         this.productList = productList;
         this.quantity = "";
         this.product = "";
-        setRect(0, 0, FILL, PARENTSIZE + 12);
+        setRect(0, 0, FILL, PARENTSIZE + 20);
     }
 
-    public ItemOrderTileWithListContainerItem(List<Product> productList, String quantity, String product) throws SQLException {
-        super(null);
+    public ItemOrderTileWithListContainerItem(List<Product> productList, String quantity, String product, ListContainer.Layout layout) throws SQLException {
+        super(layout);
+        this.items = new String[]{"", ""};
         this.productList = productList;
         this.quantity = quantity;
         this.product = product;
-        setRect(0, 0, FILL, PARENTSIZE + 12);
+        setRect(0, 0, FILL, PREFERRED);
     }
 
     @Override
@@ -54,11 +56,11 @@ public class ItemOrderTileWithListContainerItem extends ListContainer.Item {
         add(comboBox, AFTER + 8, CENTER, PARENTSIZE + 70, PREFERRED);
     }
 
-    public Integer getQuantidade() {
+    public Integer getQuantity() {
         return quantityEdit.getText().isEmpty() ? 0 : Integer.parseInt(quantityEdit.getText());
     }
 
-    public Product getProduto() {
+    public Product getProduct() {
         return productList.get(comboBox.getSelectedIndex());
     }
 }

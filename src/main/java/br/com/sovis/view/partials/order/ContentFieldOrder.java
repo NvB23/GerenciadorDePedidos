@@ -24,14 +24,14 @@ public class ContentFieldOrder extends Container {
 
     ComboBox clientsComboBox;
 
-    ItemOrderTile itemOrderTile;
+    ItemOrderTileWithListContainerItem itemOrderTile;
 
     private final ArrayList<Client> clients = clientController.getClients();
 
     private ArrayList<Product> products;
 
     ListContainer listContainer;
-    ArrayList<ItemOrderTile> items = new ArrayList<>();
+    ArrayList<ItemOrderTileWithListContainerItem> items = new ArrayList<>();
 
     public ContentFieldOrder() throws SQLException {}
 
@@ -56,7 +56,10 @@ public class ContentFieldOrder extends Container {
         Label emailLabel = new Label("Items do Pedido");
         emailLabel.setForeColor(Variables.SECOND_COLOR);
         add(emailLabel, PARENTSIZE + 50, AFTER + 40 , PARENTSIZE + 90, PREFERRED);
+
         listContainer = new ListContainer();
+        ListContainer.Layout layout = listContainer.getLayout(0,2);
+        layout.setup();
         try {
             Button addButton = new Button(new Image("add.png").getScaledInstance(30,30));
             addButton.setBackColor(Variables.PRIMARY_COLOR);
@@ -74,11 +77,11 @@ public class ContentFieldOrder extends Container {
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
-//                    ListContainer.Layout layout = listContainer.getLayout();
-//                    itemOrderTile = new ItemOrderTileWithListContainerItem(products, layout);
-                    itemOrderTile = new ItemOrderTile(products);
+                    itemOrderTile = new ItemOrderTileWithListContainerItem(products, layout);
+                    //itemOrderTile = new ItemOrderTile(products);
                     items.add(itemOrderTile);
                     listContainer.addContainer(itemOrderTile);
+                    listContainer.reposition();
                 }
             });
 
@@ -87,7 +90,21 @@ public class ContentFieldOrder extends Container {
                 public void controlPressed(ControlEvent controlEvent) {
                     int selectedItem = listContainer.getSelectedIndex();
                     items.remove(selectedItem);
-                    listContainer.remove(listContainer.getContainer(selectedItem));
+
+                    listContainer.removeAll();
+
+                    ItemOrderTileWithListContainerItem[] newItems = new ItemOrderTileWithListContainerItem[items.size()];
+
+                    for (int i = 0; i < newItems.length; i++) {
+                        //Corrigir Posição de Inserção dos itens
+                        //if (items.get(i).getPos().x)
+                        newItems[i] = items.get(i);
+                    }
+
+                    listContainer.addContainers(newItems);
+
+                    listContainer.resize();
+                    listContainer.reposition();
                     listContainer.repaintNow();
                 }
             });
@@ -110,7 +127,7 @@ public class ContentFieldOrder extends Container {
     public ArrayList<ItemOrder> getItemOrders() {
         ArrayList<ItemOrder> itemOrders = new ArrayList<>();
 
-        for (ItemOrderTile item : items) {
+        for (ItemOrderTileWithListContainerItem item : items) {
             ItemOrder itemOrder = new ItemOrder(
                     item.getProduct(),
                     item.getQuantity(),

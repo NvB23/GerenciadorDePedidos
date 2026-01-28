@@ -13,6 +13,7 @@ import br.com.sovis.view.partials.order.ItemOrderTile;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
+import totalcross.ui.dialog.MessageBox;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.Event;
 import totalcross.ui.event.PressListener;
@@ -156,14 +157,22 @@ public class EditOrderScreen extends Container {
                     if (selectedItem >= 0 && selectedItem < items.size()) {
                         items.remove(selectedItem);
 
-                        listContainer.removeAll();
+                        remove(listContainer);
 
-                        for (int i = 0; i < items.size(); i++) {
-                            ItemOrderTile item = items.get(i);
-                            listContainer.add(item, LEFT, i == 0 ? TOP : AFTER, FILL, PARENTSIZE + 40);
+                        listContainer = new ListContainer();
+                        listContainer.getLayout(0,1);
+                        layout.setup();
+                        listContainer.setRect(LEFT, PARENTSIZE + 70, FILL, PARENTSIZE + 60);
+
+                        for (ItemOrderTile item : items) {
+                            listContainer.addContainer(item);
                         }
 
+                        add(listContainer);
                         repaint();
+                    }
+                    else {
+                        new MessageBox("Item não Selecionado!", "Selecione um item para realizar a operação.").popup();
                     }
                 }
             });

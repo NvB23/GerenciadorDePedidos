@@ -10,6 +10,7 @@ import br.com.sovis.model.Product;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
+import totalcross.ui.dialog.MessageBox;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.PressListener;
 import totalcross.ui.gfx.Color;
@@ -61,6 +62,9 @@ public class ContentFieldOrder extends Container {
         listContainer = new ListContainer();
         ListContainer.Layout layout = listContainer.getLayout(0,1);
         layout.setup();
+        listContainer.setRect(LEFT, PARENTSIZE + 60, FILL, PARENTSIZE + 60);
+        add(listContainer);
+
         try {
             Button addButton = new Button(new Image("add.png").getScaledInstance(30,30));
             addButton.setBackColor(Variables.PRIMARY_COLOR);
@@ -78,10 +82,10 @@ public class ContentFieldOrder extends Container {
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
+
                     itemOrderTile = new ItemOrderTile(products, layout);
                     items.add(itemOrderTile);
                     listContainer.addContainer(itemOrderTile);
-                    listContainer.reposition();
                 }
             });
 
@@ -89,16 +93,27 @@ public class ContentFieldOrder extends Container {
                 @Override
                 public void controlPressed(ControlEvent controlEvent) {
                     int selectedItem = listContainer.getSelectedIndex();
-                    items.remove(selectedItem);
 
-                    listContainer.removeAll();
+                    if (selectedItem >= 0 && selectedItem < items.size()) {
+                        items.remove(selectedItem);
 
-                    for (int i = 0; i < items.size(); i++) {
-                        ItemOrderTile item = items.get(i);
-                        listContainer.add(item, LEFT, i == 0 ? TOP : AFTER, FILL, PARENTSIZE + 40);
+                        remove(listContainer);
+
+                        listContainer = new ListContainer();
+                        listContainer.getLayout(0,1);
+                        layout.setup();
+                        listContainer.setRect(LEFT, PARENTSIZE + 60, FILL, PARENTSIZE + 60);
+
+                        for (ItemOrderTile item : items) {
+                            listContainer.addContainer(item);
+                        }
+
+                        add(listContainer);
+                        repaint();
                     }
-
-                    repaint();
+                    else {
+                        new MessageBox("Item não Selecionado!", "Selecione um item para realizar a operação.").popup();
+                    }
                 }
             });
 
@@ -108,7 +123,6 @@ public class ContentFieldOrder extends Container {
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
         }
-        add(listContainer, LEFT, AFTER + 20, FILL, FILL);
     }
 
     public Client getClient() {

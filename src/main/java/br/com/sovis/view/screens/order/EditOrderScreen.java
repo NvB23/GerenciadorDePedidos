@@ -10,6 +10,7 @@ import br.com.sovis.model.ItemOrder;
 import br.com.sovis.model.Order;
 import br.com.sovis.model.Product;
 import br.com.sovis.view.partials.order.ItemOrderTile;
+import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
@@ -172,7 +173,7 @@ public class EditOrderScreen extends Container {
                         repaint();
                     }
                     else {
-                        new MessageBox("Item não Selecionado!", "Selecione um item para realizar a operação.").popup();
+                        MessageBoxVariables.notSelectedItem();
                     }
                 }
             });

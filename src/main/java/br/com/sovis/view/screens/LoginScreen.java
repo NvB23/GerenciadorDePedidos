@@ -3,6 +3,7 @@ package br.com.sovis.view.screens;
 import br.com.sovis.controller.Authentication;
 import br.com.sovis.exception.AuthenticationException;
 import br.com.sovis.view.screens.order.HomeScreen;
+import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.ui.*;
 import totalcross.ui.Button;
@@ -67,14 +68,12 @@ public class LoginScreen extends Container {
                     try {
                         boolean success = authentication.login(emailEdit.getValue(), passwordEdit.getValue());
                         if (emailEdit.getText().isEmpty() || passwordEdit.getText().isEmpty()) {
-                            new MessageBox("Credenciais inválidas!",
-                                    "Campos vazios.").popup();
+                            MessageBoxVariables.voidFields();
                             break;
                         }
 
                         if (!success) {
-                            new MessageBox("Credenciais inválidas!",
-                                    "Erro ao acessar a conta! Verifique suas credenciais.").popup();
+                            MessageBoxVariables.invalidCredentials();
                         } else {
                             MainWindow.getMainWindow().swap(new HomeScreen());
                         }

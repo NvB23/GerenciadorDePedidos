@@ -7,6 +7,7 @@ import br.com.sovis.model.enums.OrderStatus;
 import br.com.sovis.view.partials.common.MainButton;
 import br.com.sovis.view.partials.order.OrderTile;
 import br.com.sovis.view.screens.product.ProductScreen;
+import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
@@ -122,10 +123,14 @@ public class HomeScreen extends Container {
             if (((Control) event.target).appId == 2) {
                 int indexSelectedItem = listContainer.getSelectedIndex();
                 try {
-                    Order order = orderList.get(indexSelectedItem);
-                    orderController.deleteOrder(order.getId());
-                    listContainer.remove(listContainer.getContainer(indexSelectedItem));
-                    MainWindow.getMainWindow().swap(new HomeScreen());
+                    if (indexSelectedItem >= 0 && indexSelectedItem < orderList.size()) {
+                        Order order = orderList.get(indexSelectedItem);
+                        orderController.deleteOrder(order.getId());
+                        listContainer.remove(listContainer.getContainer(indexSelectedItem));
+                        MainWindow.getMainWindow().swap(new HomeScreen());
+                    } else {
+                        MessageBoxVariables.notSelectedItem();
+                    }
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -134,9 +139,15 @@ public class HomeScreen extends Container {
             if (((Control) event.target).appId == 3) {
                 int indexSelectedItem = listContainer.getSelectedIndex();
                 try {
-                    Order order = orderController.getOrders().get(indexSelectedItem);
-                    if (order.getStatusPedido().equals(OrderStatus.FECHADO)) new MessageBox("Pedido Fechado", "Não pode editar um pedido fechado.").popup();
-                    else MainWindow.getMainWindow().swap(new EditOrderScreen(this, order.getId()));
+                    if (indexSelectedItem >= 0 && indexSelectedItem < orderList.size()) {
+                        Order order = orderController.getOrders().get(indexSelectedItem);
+                        if (order.getStatusPedido().equals(OrderStatus.FECHADO))
+                            MessageBoxVariables.orderLocked();
+                        else MainWindow.getMainWindow().swap(new EditOrderScreen(this, order.getId()));
+                    } else {
+                        MessageBoxVariables.notSelectedItem();
+                    }
+
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -145,9 +156,13 @@ public class HomeScreen extends Container {
             if (((Control) event.target).appId == 4) {
                 int indexSelectedItem = listContainer.getSelectedIndex();
                 try {
-                    Order order = orderController.getOrders().get(indexSelectedItem);
-                    orderController.updateOrderStatus(order.getId(), OrderStatus.FECHADO);
-                    MainWindow.getMainWindow().swap(new HomeScreen());
+                    if (indexSelectedItem >= 0 && indexSelectedItem < orderList.size()) {
+                        Order order = orderController.getOrders().get(indexSelectedItem);
+                        orderController.updateOrderStatus(order.getId(), OrderStatus.FECHADO);
+                        MainWindow.getMainWindow().swap(new HomeScreen());
+                    } else {
+                        MessageBoxVariables.notSelectedItem();
+                    }
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }

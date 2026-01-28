@@ -6,6 +6,7 @@ import br.com.sovis.model.Client;
 import br.com.sovis.view.partials.client.ClientTile;
 import br.com.sovis.view.partials.common.MainButton;
 import br.com.sovis.view.screens.order.HomeScreen;
+import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
@@ -105,10 +106,14 @@ public class ClientScreen extends Container {
             if (((Control) event.target).appId == 4) {
                 int itemSelectedIndex = listContainer.getSelectedIndex();
                 try {
-                    Client client = clientList.get(itemSelectedIndex);
-                    clientController.deleteClient(client.getId());
-                    listContainer.remove(listContainer.getContainer(itemSelectedIndex));
-                    MainWindow.getMainWindow().swap(new ClientScreen());
+                    if (itemSelectedIndex >= 0 && itemSelectedIndex < clientList.size()) {
+                        Client client = clientList.get(itemSelectedIndex);
+                        clientController.deleteClient(client.getId());
+                        listContainer.remove(listContainer.getContainer(itemSelectedIndex));
+                        MainWindow.getMainWindow().swap(new ClientScreen());
+                    } else {
+                        MessageBoxVariables.notSelectedItem();
+                    }
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -116,8 +121,13 @@ public class ClientScreen extends Container {
             if (((Control) event.target).appId == 5) {
                 int itemSelectedIndex = listContainer.getSelectedIndex();
                 try {
-                    Client client = clientController.getClients().get(itemSelectedIndex);
-                    MainWindow.getMainWindow().swap(new EditClientScreen(this, client.getId()));
+                    if (itemSelectedIndex >= 0 && itemSelectedIndex < clientList.size()) {
+                        Client client = clientController.getClients().get(itemSelectedIndex);
+                        MainWindow.getMainWindow().swap(new EditClientScreen(this, client.getId()));
+                    } else {
+                        MessageBoxVariables.notSelectedItem();
+                    }
+
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }

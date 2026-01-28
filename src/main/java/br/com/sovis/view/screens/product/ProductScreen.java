@@ -6,6 +6,7 @@ import br.com.sovis.model.Product;
 import br.com.sovis.view.partials.product.ProductTile;
 import br.com.sovis.view.partials.common.MainButton;
 import br.com.sovis.view.screens.order.HomeScreen;
+import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
@@ -106,10 +107,14 @@ public class ProductScreen extends Container {
             if (((Control) event.target).appId == 6) {
                 int indexSelectedItem = listContainer.getSelectedIndex();
                 try {
-                    Product product = productsList.get(indexSelectedItem);
-                    productController.deleteProduct(product.getId());
-                    listContainer.remove(listContainer.getContainer(indexSelectedItem));
-                    MainWindow.getMainWindow().swap(new ProductScreen());
+                    if (indexSelectedItem >= 0 && indexSelectedItem < productsList.size()) {
+                        Product product = productsList.get(indexSelectedItem);
+                        productController.deleteProduct(product.getId());
+                        listContainer.remove(listContainer.getContainer(indexSelectedItem));
+                        MainWindow.getMainWindow().swap(new ProductScreen());
+                    } else {
+                        MessageBoxVariables.notSelectedItem();
+                    }
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -117,8 +122,12 @@ public class ProductScreen extends Container {
             if (((Control) event.target).appId == 7) {
                 int indexSelectedItem = listContainer.getSelectedIndex();
                 try {
-                    Product product = productController.listarProdutos().get(indexSelectedItem);
-                    MainWindow.getMainWindow().swap(new EditProductScreen(this, product.getId()));
+                    if (indexSelectedItem >= 0 && indexSelectedItem < productsList.size()) {
+                        Product product = productController.listarProdutos().get(indexSelectedItem);
+                        MainWindow.getMainWindow().swap(new EditProductScreen(this, product.getId()));
+                    }  else {
+                        MessageBoxVariables.notSelectedItem();
+                    }
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }

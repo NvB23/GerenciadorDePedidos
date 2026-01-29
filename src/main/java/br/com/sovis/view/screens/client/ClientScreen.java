@@ -21,9 +21,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ClientScreen extends Container {
-    ClientController clientController = new ClientController();
-    ListContainer listContainer;
-    ArrayList<Client> clientList;
+    private final ClientController clientController = new ClientController();
+    private ListContainer listContainer;
+    private ArrayList<Client> clientList;
+
+    private final int APP_ID_BACK_BUTTON = 999;
+    private final int APP_ID_DELETE_BUTTON = 4;
+    private final int APP_ID_EDIT_BUTTON = 5;
 
     @Override
     public void initUI() {
@@ -34,7 +38,7 @@ public class ClientScreen extends Container {
         try {
             Button backButton = new Button(new Image("back-arrow.png").getScaledInstance(20, 20));
             backButton.setBackColor(Variables.PRIMARY_COLOR);
-            backButton.appId = 999;
+            backButton.appId = APP_ID_BACK_BUTTON;
             tabBar.add(backButton, LEFT, TOP);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
@@ -57,10 +61,10 @@ public class ClientScreen extends Container {
         try {
             deleteButton = new Button(new Image("trash.png").getScaledInstance(20,20));
             deleteButton.setBackColor(Variables.PRIMARY_COLOR);
-            deleteButton.appId = 4;
+            deleteButton.appId = APP_ID_DELETE_BUTTON;
             editButton = new Button(new Image("edit.png").getScaledInstance(20,20));
             editButton.setBackColor(Variables.PRIMARY_COLOR);
-            editButton.appId = 5;
+            editButton.appId = APP_ID_EDIT_BUTTON;
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
         }
@@ -96,14 +100,14 @@ public class ClientScreen extends Container {
     @Override
     public void onEvent(Event event) {
         if (event.type == ControlEvent.PRESSED) {
-            if (((Control) event.target).appId == 999) {
+            if (((Control) event.target).appId == APP_ID_BACK_BUTTON) {
                 try {
                     MainWindow.getMainWindow().swap(new HomeScreen());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
             }
-            if (((Control) event.target).appId == 4) {
+            if (((Control) event.target).appId == APP_ID_DELETE_BUTTON) {
                 int itemSelectedIndex = listContainer.getSelectedIndex();
                 try {
                     if (itemSelectedIndex >= 0 && itemSelectedIndex < clientList.size()) {
@@ -118,7 +122,7 @@ public class ClientScreen extends Container {
                     throw new RuntimeException(e);
                 }
             }
-            if (((Control) event.target).appId == 5) {
+            if (((Control) event.target).appId == APP_ID_EDIT_BUTTON) {
                 int itemSelectedIndex = listContainer.getSelectedIndex();
                 try {
                     if (itemSelectedIndex >= 0 && itemSelectedIndex < clientList.size()) {

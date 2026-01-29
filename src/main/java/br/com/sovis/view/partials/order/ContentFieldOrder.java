@@ -25,16 +25,18 @@ public class ContentFieldOrder extends Container {
     private final ClientController clientController = new ClientController();
     private final ProductController productController = new ProductController();
 
-    ComboBox clientsComboBox;
+    private ComboBox clientsComboBox;
 
-    ItemOrderTile itemOrderTile;
+    private ItemOrderTile itemOrderTile;
 
     private final ArrayList<Client> clients = clientController.getClients();
 
     private ArrayList<Product> products;
 
-    ListContainer listContainer;
-    ArrayList<ItemOrderTile> items = new ArrayList<>();
+    private ListContainer listContainer;
+    private final ArrayList<ItemOrderTile> items = new ArrayList<>();
+
+
 
     public ContentFieldOrder() throws SQLException {}
 
@@ -69,11 +71,9 @@ public class ContentFieldOrder extends Container {
         try {
             Button addButton = new Button(new Image("add.png").getScaledInstance(30,30));
             addButton.setBackColor(Variables.PRIMARY_COLOR);
-            addButton.appId = 1212;
 
             Button deleteButton = new Button(new Image("trash.png").getScaledInstance(30,30));
             deleteButton.setBackColor(Variables.PRIMARY_COLOR);
-            deleteButton.appId = 1313;
 
             addButton.addPressListener(new PressListener() {
                 @Override

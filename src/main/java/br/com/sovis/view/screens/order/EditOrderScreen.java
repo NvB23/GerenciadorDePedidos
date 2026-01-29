@@ -14,7 +14,6 @@ import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
-import totalcross.ui.dialog.MessageBox;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.Event;
 import totalcross.ui.event.PressListener;
@@ -28,19 +27,21 @@ import java.util.ArrayList;
 public class EditOrderScreen extends Container {
     private final Container toContainer;
     private final Order order;
-    ComboBox clientsComboBox;
+    private ComboBox clientsComboBox;
 
-    ClientController clientController = new ClientController();
-    ProductController productController = new ProductController();
-    OrderController orderController = new OrderController();
-    private ItemOrderController itemOrderController = new ItemOrderController();
+    private final ClientController clientController = new ClientController();
+    private final ProductController productController = new ProductController();
+    private final OrderController orderController = new OrderController();
+    private final ItemOrderController itemOrderController = new ItemOrderController();
 
     private final ArrayList<Client> clients = clientController.getClients();
     private ArrayList<Product> products;
-    private ArrayList<ItemOrder> itemOrders;
-    ListContainer listContainer;
-    ArrayList<ItemOrderTile> items = new ArrayList<>();
-    ItemOrderTile itemOrderTile;
+    private ListContainer listContainer;
+    private final ArrayList<ItemOrderTile> items = new ArrayList<>();
+    private ItemOrderTile itemOrderTile;
+
+    private final int APP_ID_SAVE_BUTTON = 0;
+    private final int APP_ID_BACK_BUTTON = 999;
 
     public EditOrderScreen(Container toContainer, Long idOrderToEdit) throws SQLException {
         this.toContainer = toContainer;
@@ -57,7 +58,7 @@ public class EditOrderScreen extends Container {
         try {
             Button backButton = new Button(new Image("back-arrow.png").getScaledInstance(20, 20));
             backButton.setBackColor(Variables.PRIMARY_COLOR);
-            backButton.appId = 999;
+            backButton.appId = APP_ID_BACK_BUTTON;
             tabBar.add(backButton, LEFT, TOP);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
@@ -75,7 +76,7 @@ public class EditOrderScreen extends Container {
         }
 
         saveButton.setBackColor(Variables.PRIMARY_COLOR);
-        saveButton.appId = 0;
+        saveButton.appId = APP_ID_SAVE_BUTTON;
         tabBar.add(saveButton, RIGHT, CENTER);
 
         add(tabBar);
@@ -106,6 +107,8 @@ public class EditOrderScreen extends Container {
         layout.setup();
         listContainer.setRect(LEFT, PARENTSIZE + 70, FILL, PARENTSIZE + 60);
         add(listContainer);
+
+        ArrayList<ItemOrder> itemOrders;
 
         try {
             products = productController.listarProdutos();
@@ -199,7 +202,7 @@ public class EditOrderScreen extends Container {
 
             Button control = (Button) event.target;
 
-            if (control.appId == 0) {
+            if (control.appId == APP_ID_SAVE_BUTTON) {
                 try {
                     editOrder();
                 } catch (SQLException e) {
@@ -208,7 +211,7 @@ public class EditOrderScreen extends Container {
                 return;
             }
 
-            if (control.appId == 999) {
+            if (control.appId == APP_ID_BACK_BUTTON) {
                 MainWindow.getMainWindow().swap(toContainer);
             }
         }

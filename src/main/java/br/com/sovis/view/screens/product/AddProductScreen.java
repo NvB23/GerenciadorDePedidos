@@ -21,6 +21,9 @@ public class AddProductScreen extends Container {
     private final ContentFieldProduct contentFieldProduct =  new ContentFieldProduct();
     private final ProductController productController = new ProductController();
 
+    private final int APP_ID_BACK_BUTTON = 999;
+    private final int APP_ID_SAVE_BUTTON = 0;
+
     public AddProductScreen(Container toContainer) {
         this.toContainer = toContainer;
         setRect(0, 0, FILL, FILL);
@@ -35,7 +38,7 @@ public class AddProductScreen extends Container {
         try {
             Button backButton = new Button(new Image("back-arrow.png").getScaledInstance(20, 20));
             backButton.setBackColor(Variables.PRIMARY_COLOR);
-            backButton.appId = 999;
+            backButton.appId = APP_ID_BACK_BUTTON;
             tabBar.add(backButton, LEFT, TOP);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
@@ -53,7 +56,7 @@ public class AddProductScreen extends Container {
         }
 
         saveButton.setBackColor(Variables.PRIMARY_COLOR);
-        saveButton.appId = 0;
+        saveButton.appId = APP_ID_SAVE_BUTTON;
         tabBar.add(saveButton, RIGHT, CENTER);
 
         add(tabBar);
@@ -67,7 +70,7 @@ public class AddProductScreen extends Container {
 
             Control control = (Control) event.target;
 
-            if (control.appId == 0) {
+            if (control.appId == APP_ID_SAVE_BUTTON) {
                 try {
                     MainWindow.getMainWindow().setFocus(null);
                     saveClient(contentFieldProduct);
@@ -77,7 +80,7 @@ public class AddProductScreen extends Container {
                 }
             }
 
-            if (control.appId == 999) {
+            if (control.appId == APP_ID_BACK_BUTTON) {
                 MainWindow.getMainWindow().swap(toContainer);
             }
         }

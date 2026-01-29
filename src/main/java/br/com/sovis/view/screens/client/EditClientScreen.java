@@ -20,6 +20,9 @@ public class EditClientScreen extends Container {
     private final ClientController clientController = new ClientController();
     private Edit nameEdit, emailEdit, phoneEdit;
 
+    private final int APP_ID_SAVE_BUTTON = 5;
+    private final int APP_ID_BACK_BUTTON = 999;
+
     public EditClientScreen(Container toContainer, Long idToEdit) throws SQLException {
         this.toContainer = toContainer;
         this.clientEdit = clientController.getClientById(idToEdit);
@@ -35,7 +38,7 @@ public class EditClientScreen extends Container {
         try {
             Button backButton = new Button(new Image("back-arrow.png").getScaledInstance(20, 20));
             backButton.setBackColor(Variables.PRIMARY_COLOR);
-            backButton.appId = 999;
+            backButton.appId = APP_ID_BACK_BUTTON;
             tabBar.add(backButton, LEFT, TOP);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
@@ -53,7 +56,7 @@ public class EditClientScreen extends Container {
         }
 
         saveButton.setBackColor(Variables.PRIMARY_COLOR);
-        saveButton.appId = 5;
+        saveButton.appId = APP_ID_SAVE_BUTTON;
         tabBar.add(saveButton, RIGHT, CENTER);
 
         add(tabBar);
@@ -90,11 +93,11 @@ public class EditClientScreen extends Container {
         if (event.type == ControlEvent.PRESSED && event.target instanceof Button) {
             Control control = (Control) event.target;
 
-            if (control.appId == 999) {
+            if (control.appId == APP_ID_BACK_BUTTON) {
                 MainWindow.getMainWindow().swap(this.toContainer);
             }
 
-            if (control.appId == 5) {
+            if (control.appId == APP_ID_SAVE_BUTTON) {
                 try {
                     editClient();
                 } catch (SQLException e) {

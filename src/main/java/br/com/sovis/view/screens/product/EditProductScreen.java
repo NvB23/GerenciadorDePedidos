@@ -19,7 +19,10 @@ public class EditProductScreen extends Container {
     private final Product produtoEdit;
     private final ProductController productController = new ProductController();
 
-    Edit nameEdit, descriptionEdit, priceEdit;
+    private Edit nameEdit, descriptionEdit, priceEdit;
+
+    private final int APP_ID_SAVE_BUTTON = 0;
+    private final int APP_ID_BACK_BUTTON = 999;
 
     public EditProductScreen(Container toContainer, Long idParaEditar) throws SQLException {
         this.toContainer = toContainer;
@@ -36,7 +39,7 @@ public class EditProductScreen extends Container {
         try {
             Button backButton = new Button(new Image("back-arrow.png").getScaledInstance(20, 20));
             backButton.setBackColor(Variables.PRIMARY_COLOR);
-            backButton.appId = 999;
+            backButton.appId = APP_ID_BACK_BUTTON;
             tabBar.add(backButton, LEFT, TOP);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
@@ -54,7 +57,7 @@ public class EditProductScreen extends Container {
         }
 
         saveButton.setBackColor(Variables.PRIMARY_COLOR);
-        saveButton.appId = 0;
+        saveButton.appId = APP_ID_SAVE_BUTTON;
         tabBar.add(saveButton, RIGHT, CENTER);
 
         add(tabBar);
@@ -88,10 +91,10 @@ public class EditProductScreen extends Container {
     @Override
     public void onEvent(Event event) {
         if (event.type == ControlEvent.PRESSED && event.target instanceof Button) {
-            if (((Control) event.target).appId == 999) {
+            if (((Control) event.target).appId == APP_ID_BACK_BUTTON) {
                 MainWindow.getMainWindow().swap(toContainer);
             }
-            if (((Control) event.target).appId == 0) {
+            if (((Control) event.target).appId == APP_ID_SAVE_BUTTON) {
                 try {
                     editClient();
                 } catch (SQLException e) {

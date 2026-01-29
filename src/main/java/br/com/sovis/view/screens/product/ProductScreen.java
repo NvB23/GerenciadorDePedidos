@@ -22,8 +22,12 @@ import java.util.ArrayList;
 
 public class ProductScreen extends Container {
     private final ProductController productController = new ProductController();
-    ListContainer listContainer;
-    ArrayList<Product> productsList;
+    private ListContainer listContainer;
+    private ArrayList<Product> productsList;
+
+    private final int APP_ID_BACK_BUTTON = 999;
+    private final int APP_ID_DELETE_BUTTON = 6;
+    private final int APP_ID_EDIT_BUTTON =  7;
 
     @Override
     public void initUI() {
@@ -34,7 +38,7 @@ public class ProductScreen extends Container {
         try {
             Button backButton = new Button(new Image("back-arrow.png").getScaledInstance(20, 20));
             backButton.setBackColor(Variables.PRIMARY_COLOR);
-            backButton.appId = 999;
+            backButton.appId = APP_ID_BACK_BUTTON;
             tabBar.add(backButton, LEFT, TOP);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
@@ -57,10 +61,10 @@ public class ProductScreen extends Container {
         try {
             deleteButton = new Button(new Image("trash.png").getScaledInstance(20,20));
             deleteButton.setBackColor(Variables.PRIMARY_COLOR);
-            deleteButton.appId = 6;
+            deleteButton.appId = APP_ID_DELETE_BUTTON;
             editButton = new Button(new Image("edit.png").getScaledInstance(20,20));
             editButton.setBackColor(Variables.PRIMARY_COLOR);
-            editButton.appId = 7;
+            editButton.appId = APP_ID_EDIT_BUTTON;
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
         }
@@ -97,14 +101,14 @@ public class ProductScreen extends Container {
     @Override
     public void onEvent(Event event) {
         if (event.type == ControlEvent.PRESSED) {
-            if (((Control) event.target).appId == 999) {
+            if (((Control) event.target).appId == APP_ID_BACK_BUTTON) {
                 try {
                     MainWindow.getMainWindow().swap(new HomeScreen());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
             }
-            if (((Control) event.target).appId == 6) {
+            if (((Control) event.target).appId == APP_ID_DELETE_BUTTON) {
                 int indexSelectedItem = listContainer.getSelectedIndex();
                 try {
                     if (indexSelectedItem >= 0 && indexSelectedItem < productsList.size()) {
@@ -119,7 +123,7 @@ public class ProductScreen extends Container {
                     throw new RuntimeException(e);
                 }
             }
-            if (((Control) event.target).appId == 7) {
+            if (((Control) event.target).appId == APP_ID_EDIT_BUTTON) {
                 int indexSelectedItem = listContainer.getSelectedIndex();
                 try {
                     if (indexSelectedItem >= 0 && indexSelectedItem < productsList.size()) {

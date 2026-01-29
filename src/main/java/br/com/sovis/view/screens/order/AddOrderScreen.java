@@ -1,6 +1,5 @@
 package br.com.sovis.view.screens.order;
 
-import br.com.sovis.controller.ClientController;
 import br.com.sovis.controller.OrderController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Client;
@@ -20,10 +19,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class AddOrderScreen extends Container {
-    private ClientController clientController = new ClientController();
     private final OrderController orderController = new OrderController();
     private final ContentFieldOrder contentFieldOrder = new ContentFieldOrder();
     private final Container toContainer;
+
+    private final int APP_ID_SAVE_BUTTON = 0;
+    private final int APP_ID_BACK_BUTTON = 999;
 
     public AddOrderScreen(Container toContainer) throws SQLException {
         this.toContainer = toContainer;
@@ -39,7 +40,7 @@ public class AddOrderScreen extends Container {
         try {
             Button backButton = new Button(new Image("back-arrow.png").getScaledInstance(20, 20));
             backButton.setBackColor(Variables.PRIMARY_COLOR);
-            backButton.appId = 999;
+            backButton.appId = APP_ID_BACK_BUTTON;
             tabBar.add(backButton, LEFT, TOP);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
@@ -57,7 +58,7 @@ public class AddOrderScreen extends Container {
         }
 
         saveButton.setBackColor(Variables.PRIMARY_COLOR);
-        saveButton.appId = 0;
+        saveButton.appId = APP_ID_SAVE_BUTTON;
         tabBar.add(saveButton, RIGHT, CENTER);
 
         add(tabBar);
@@ -71,7 +72,7 @@ public class AddOrderScreen extends Container {
 
             Button control = (Button) event.target;
 
-            if (control.appId == 0) {
+            if (control.appId == APP_ID_SAVE_BUTTON) {
                 try {
                     salvarPedido(contentFieldOrder);
                 } catch (SQLException e) {
@@ -80,7 +81,7 @@ public class AddOrderScreen extends Container {
                 return;
             }
 
-            if (control.appId == 999) {
+            if (control.appId == APP_ID_BACK_BUTTON) {
                 MainWindow.getMainWindow().swap(toContainer);
             }
         }

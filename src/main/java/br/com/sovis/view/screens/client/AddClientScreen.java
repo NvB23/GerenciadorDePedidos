@@ -19,7 +19,10 @@ import java.sql.SQLException;
 public class AddClientScreen extends Container {
     private final ClientController clienteController = new ClientController();
     private final Container toContainer;
-    ContentFieldClient contentFieldCliente = new ContentFieldClient();
+    private final ContentFieldClient contentFieldCliente = new ContentFieldClient();
+
+    private final int APP_ID_BACK_BUTTON = 999;
+    private final int APP_ID_SAVE_BUTTON = 0;
 
 
     public AddClientScreen(Container toContainer) {
@@ -36,7 +39,7 @@ public class AddClientScreen extends Container {
         try {
             Button backButton = new Button(new Image("back-arrow.png").getScaledInstance(20, 20));
             backButton.setBackColor(Variables.PRIMARY_COLOR);
-            backButton.appId = 999;
+            backButton.appId = APP_ID_BACK_BUTTON;
             tabBar.add(backButton, LEFT, TOP);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
@@ -49,7 +52,7 @@ public class AddClientScreen extends Container {
         try {
             Button saveButton = new Button(new Image("save.png").getScaledInstance(30, 30));
             saveButton.setBackColor(Variables.PRIMARY_COLOR);
-            saveButton.appId = 0;
+            saveButton.appId = APP_ID_SAVE_BUTTON;
             tabBar.add(saveButton, RIGHT, CENTER);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
@@ -66,7 +69,7 @@ public class AddClientScreen extends Container {
 
             Control control = (Control) event.target;
 
-            if (control.appId == 0) {
+            if (control.appId == APP_ID_SAVE_BUTTON) {
                 try {
                     MainWindow.getMainWindow().setFocus(null);
                     saveClient(contentFieldCliente);
@@ -76,7 +79,7 @@ public class AddClientScreen extends Container {
                 }
             }
 
-            if (control.appId == 999) {
+            if (control.appId == APP_ID_BACK_BUTTON) {
                 MainWindow.getMainWindow().swap(toContainer);
             }
         }

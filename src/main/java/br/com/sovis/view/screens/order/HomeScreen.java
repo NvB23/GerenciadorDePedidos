@@ -11,7 +11,6 @@ import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
-import totalcross.ui.dialog.MessageBox;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.Event;
 import br.com.sovis.view.screens.client.ClientScreen;
@@ -26,8 +25,14 @@ import java.util.ArrayList;
 
 public class HomeScreen extends Container {
     private final OrderController orderController = new OrderController();
-    ListContainer listContainer;
-    ArrayList<Order> orderList = orderController.getOrders();;
+    private ListContainer listContainer;
+    private final ArrayList<Order> orderList = orderController.getOrders();
+
+    private final int APP_ID_CLIENT_BUTTON = 0;
+    private final int APP_ID_PRODUCT_BUTTON = 1;
+    private final int APP_ID_DELETE_BUTTON = 2;
+    private final int APP_ID_EDIT_BUTTON = 3;
+    private final int APP_ID_LOCK_BUTTON = 4;
 
     public HomeScreen() throws SQLException {
         setRect(0, 0, FILL, FILL);
@@ -46,12 +51,12 @@ public class HomeScreen extends Container {
         try {
             Button clientButton = new Button(new Image("tab-client.png").getScaledInstance(30, 30));
             clientButton.setBackColor(Variables.PRIMARY_COLOR);
-            clientButton.appId = 0;
+            clientButton.appId = APP_ID_CLIENT_BUTTON;
             tabBar.add(clientButton, RIGHT, CENTER);
 
             Button productButton = new Button(new Image("tab-product.png").getScaledInstance(30, 30));
             productButton.setBackColor(Variables.PRIMARY_COLOR);
-            productButton.appId = 1;
+            productButton.appId = APP_ID_PRODUCT_BUTTON;
             tabBar.add(productButton, BEFORE, CENTER);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
@@ -74,13 +79,13 @@ public class HomeScreen extends Container {
         try {
             deleteButton = new Button(new Image("trash.png").getScaledInstance(20,20));
             deleteButton.setBackColor(Variables.PRIMARY_COLOR);
-            deleteButton.appId = 2;
+            deleteButton.appId = APP_ID_DELETE_BUTTON;
             editButton = new Button(new Image("edit.png").getScaledInstance(20,20));
             editButton.setBackColor(Variables.PRIMARY_COLOR);
-            editButton.appId = 3;
+            editButton.appId = APP_ID_EDIT_BUTTON;
             closeButton = new Button(new Image("padlock.png").getScaledInstance(20,20));
             closeButton.setBackColor(Variables.PRIMARY_COLOR);
-            closeButton.appId = 4;
+            closeButton.appId = APP_ID_LOCK_BUTTON;
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
         }
@@ -114,13 +119,13 @@ public class HomeScreen extends Container {
     @Override
     public void onEvent(Event event) {
         if (event.type == ControlEvent.PRESSED && event.target instanceof Button) {
-            if (((Control) event.target).appId == 0)
+            if (((Control) event.target).appId == APP_ID_CLIENT_BUTTON)
                 MainWindow.getMainWindow().swap(new ClientScreen());
 
-            if (((Control) event.target).appId == 1)
+            if (((Control) event.target).appId == APP_ID_PRODUCT_BUTTON)
                 MainWindow.getMainWindow().swap(new ProductScreen());
 
-            if (((Control) event.target).appId == 2) {
+            if (((Control) event.target).appId == APP_ID_DELETE_BUTTON) {
                 int indexSelectedItem = listContainer.getSelectedIndex();
                 try {
                     if (indexSelectedItem >= 0 && indexSelectedItem < orderList.size()) {
@@ -136,7 +141,7 @@ public class HomeScreen extends Container {
                 }
             }
 
-            if (((Control) event.target).appId == 3) {
+            if (((Control) event.target).appId == APP_ID_EDIT_BUTTON) {
                 int indexSelectedItem = listContainer.getSelectedIndex();
                 try {
                     if (indexSelectedItem >= 0 && indexSelectedItem < orderList.size()) {
@@ -153,7 +158,7 @@ public class HomeScreen extends Container {
                 }
             }
 
-            if (((Control) event.target).appId == 4) {
+            if (((Control) event.target).appId == APP_ID_LOCK_BUTTON) {
                 int indexSelectedItem = listContainer.getSelectedIndex();
                 try {
                     if (indexSelectedItem >= 0 && indexSelectedItem < orderList.size()) {

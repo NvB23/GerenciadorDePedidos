@@ -5,7 +5,6 @@ import br.com.sovis.view.style.Variables;
 import totalcross.ui.ComboBox;
 import totalcross.ui.Edit;
 import totalcross.ui.ListContainer;
-import totalcross.ui.ScrollContainer;
 
 import java.sql.SQLException;
 import java.util.List;

@@ -2,21 +2,15 @@ package br.com.sovis.controller;
 
 import br.com.sovis.dao.ItemOrderDAO;
 import br.com.sovis.dao.OrderDAO;
-import br.com.sovis.dao.ProductDAO;
 import br.com.sovis.model.ItemOrder;
 import br.com.sovis.model.Order;
-import br.com.sovis.model.Product;
 import br.com.sovis.model.enums.OrderStatus;
-import br.com.sovis.view.partials.order.OrderTile;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class OrderController {
     private final OrderDAO orderDAO = new OrderDAO();
-    private final ProductDAO productDAO = new ProductDAO();
     private final ItemOrderDAO itemOrderDAO = new ItemOrderDAO();
 
     public void createOrder(Order order, ArrayList<ItemOrder> itemOrders) throws SQLException {

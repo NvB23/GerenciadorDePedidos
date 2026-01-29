@@ -9,7 +9,6 @@ import totalcross.ui.*;
 import totalcross.ui.Button;
 import totalcross.ui.Container;
 import totalcross.ui.Label;
-import totalcross.ui.dialog.MessageBox;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.Event;
 import totalcross.ui.font.Font;
@@ -57,30 +56,29 @@ public class LoginScreen extends Container {
 
     @Override
     public void onEvent(Event event) {
-        switch (event.type) {
-            case ControlEvent.PRESSED:
+        if (event.type == ControlEvent.PRESSED) {
+            try {
+                MainWindow.getMainWindow().swap(new HomeScreen());
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            if (event.target == enterButton) {
                 try {
-                    MainWindow.getMainWindow().swap(new HomeScreen());
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-                if (event.target == enterButton) {
-                    try {
-                        boolean success = authentication.login(emailEdit.getValue(), passwordEdit.getValue());
-                        if (emailEdit.getText().isEmpty() || passwordEdit.getText().isEmpty()) {
-                            MessageBoxVariables.voidFields();
-                            break;
-                        }
-
-                        if (!success) {
-                            MessageBoxVariables.invalidCredentials();
-                        } else {
-                            MainWindow.getMainWindow().swap(new HomeScreen());
-                        }
-                    } catch (SQLException e) {
-                        throw new AuthenticationException(e);
+                    boolean success = authentication.login(emailEdit.getValue(), passwordEdit.getValue());
+                    if (emailEdit.getText().isEmpty() || passwordEdit.getText().isEmpty()) {
+                        MessageBoxVariables.voidFields();
+                        return;
                     }
+
+                    if (!success) {
+                        MessageBoxVariables.invalidCredentials();
+                    } else {
+                        MainWindow.getMainWindow().swap(new HomeScreen());
+                    }
+                } catch (SQLException e) {
+                    throw new AuthenticationException(e);
                 }
+            }
         }
     }
 }

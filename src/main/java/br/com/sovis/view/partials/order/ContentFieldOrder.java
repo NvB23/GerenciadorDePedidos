@@ -11,10 +11,8 @@ import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
-import totalcross.ui.dialog.MessageBox;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.PressListener;
-import totalcross.ui.gfx.Color;
 import totalcross.ui.image.Image;
 import totalcross.ui.image.ImageException;
 

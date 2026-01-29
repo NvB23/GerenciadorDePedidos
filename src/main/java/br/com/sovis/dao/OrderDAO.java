@@ -76,7 +76,7 @@ public class OrderDAO {
 
         preparedStatement.setString(1, id);
 
-        int i = preparedStatement.executeUpdate();
+        preparedStatement.executeUpdate();
 
         preparedStatement.close();
         connection.close();

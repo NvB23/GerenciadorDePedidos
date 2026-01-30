@@ -6,9 +6,11 @@ import br.com.sovis.model.Client;
 import br.com.sovis.model.ItemOrder;
 import br.com.sovis.model.Order;
 import br.com.sovis.view.partials.order.ContentFieldOrder;
+import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
+import totalcross.ui.dialog.MessageBox;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.Event;
 import totalcross.ui.gfx.Color;
@@ -91,7 +93,19 @@ public class AddOrderScreen extends Container {
         Client client = contentFieldOrder.getClient();
         ArrayList<ItemOrder> itemOrders = contentFieldOrder.getItemOrders();
 
-        if (itemOrders == null || itemOrders.isEmpty()) throw new IllegalStateException("Pedido não poder ser salvo sem itens");
+        if (client == null) {
+            MessageBoxVariables.emptyClient();
+            return;
+        }
+
+        if (itemOrders == null) {
+            MessageBoxVariables.itemWithQuantityBellowZero();
+        }
+
+        if (itemOrders.isEmpty()) {
+            MessageBoxVariables.emptyListItemsOrder();
+            return;
+        }
 
         Order order = new Order(client);
 

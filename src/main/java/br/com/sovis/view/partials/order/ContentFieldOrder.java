@@ -11,6 +11,7 @@ import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
+import totalcross.ui.dialog.MessageBox;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.PressListener;
 import totalcross.ui.image.Image;
@@ -126,6 +127,7 @@ public class ContentFieldOrder extends Container {
 
     public Client getClient() {
         int idSelectedClients = clientsComboBox.getSelectedIndex();
+        if (idSelectedClients < 0 || clientsComboBox.getValue().toString().isEmpty()) return null;
         return clients.get(idSelectedClients);
     }
 
@@ -140,6 +142,12 @@ public class ContentFieldOrder extends Container {
             );
 
             itemOrders.add(itemOrder);
+        }
+
+        for (ItemOrder itemOrder : itemOrders) {
+            if (itemOrder.getQuantity() <= 0 || String.valueOf(itemOrder.getQuantity()).isEmpty()) {
+                return null;
+            }
         }
         return itemOrders;
     }

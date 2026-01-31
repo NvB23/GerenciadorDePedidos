@@ -60,6 +60,7 @@ public class ItemOrderTile extends ListContainer.Item {
     }
 
     public Product getProduct() {
-        return productList.get(comboBox.getSelectedIndex());
+        if (comboBox.getSelectedIndex() < 0) return null;
+        else return productList.get(comboBox.getSelectedIndex());
     }
 }

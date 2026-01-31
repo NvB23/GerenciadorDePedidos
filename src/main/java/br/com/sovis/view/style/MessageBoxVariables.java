@@ -34,4 +34,8 @@ public class MessageBoxVariables {
     public static void itemWithProductEmpty () {
         new MessageBox("Item Sem Produto!", "Item sem produto selecionado.").popup();
     }
+
+    public static void itemWithQuantityOrProductEmpty () {
+        new MessageBox("Item Sem Quantidade ou Produto!", "Item sem quantidade válida ou produto selecionado.").popup();
+    }
 }

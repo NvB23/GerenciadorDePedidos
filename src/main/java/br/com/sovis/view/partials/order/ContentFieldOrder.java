@@ -35,6 +35,8 @@ public class ContentFieldOrder extends Container {
     private ListContainer listContainer;
     private final ArrayList<ItemOrderTile> items = new ArrayList<>();
 
+    private boolean primaryAdditionItemOrderTile = false;
+
 
 
     public ContentFieldOrder() throws SQLException {}
@@ -70,9 +72,11 @@ public class ContentFieldOrder extends Container {
         try {
             Button addButton = new Button(new Image("add.png").getScaledInstance(30,30));
             addButton.setBackColor(Variables.PRIMARY_COLOR);
+            addButton.appId = 1212;
 
             Button deleteButton = new Button(new Image("trash.png").getScaledInstance(30,30));
             deleteButton.setBackColor(Variables.PRIMARY_COLOR);
+            deleteButton.appId = 1313;
 
             addButton.addPressListener(new PressListener() {
                 @Override
@@ -84,6 +88,7 @@ public class ContentFieldOrder extends Container {
                     }
 
                     itemOrderTile = new ItemOrderTile(products, layout);
+                    primaryAdditionItemOrderTile = true;
                     items.add(itemOrderTile);
                     listContainer.addContainer(itemOrderTile);
                 }
@@ -127,7 +132,7 @@ public class ContentFieldOrder extends Container {
 
     public Client getClient() {
         int idSelectedClients = clientsComboBox.getSelectedIndex();
-        if (idSelectedClients < 0 || clientsComboBox.getValue().toString().isEmpty()) return null;
+        if (idSelectedClients < 0) return null;
         return clients.get(idSelectedClients);
     }
 
@@ -135,6 +140,15 @@ public class ContentFieldOrder extends Container {
         ArrayList<ItemOrder> itemOrders = new ArrayList<>();
 
         for (ItemOrderTile item : items) {
+            if (item.getQuantity() < 1) {
+                MessageBoxVariables.itemWithQuantityBellowZero();
+                return null;
+            }
+
+            if (item.getProduct() == null) {
+                MessageBoxVariables.itemWithProductEmpty();
+                return null;
+            }
             ItemOrder itemOrder = new ItemOrder(
                     item.getProduct(),
                     item.getQuantity(),
@@ -143,14 +157,10 @@ public class ContentFieldOrder extends Container {
 
             itemOrders.add(itemOrder);
         }
-
-        for (ItemOrder itemOrder : itemOrders) {
-            if (itemOrder.getQuantity() <= 0 || String.valueOf(itemOrder.getQuantity()).isEmpty()) {
-                return null;
-            }
-        }
         return itemOrders;
     }
 
-
+    public boolean isPrimaryAdditionItemOrderTile() {
+        return primaryAdditionItemOrderTile;
+    }
 }

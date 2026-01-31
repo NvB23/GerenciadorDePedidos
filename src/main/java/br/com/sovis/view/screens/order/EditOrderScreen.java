@@ -224,6 +224,16 @@ public class EditOrderScreen extends Container {
         for (ItemOrderTile itemOrderTile : items) {
             Product product = itemOrderTile.getProduct();
 
+            if (itemOrderTile.getQuantity() < 1) {
+                MessageBoxVariables.itemWithQuantityBellowZero();
+                return;
+            }
+
+            if (product == null) {
+                MessageBoxVariables.itemWithProductEmpty();
+                return;
+            }
+
             ItemOrder itemOrder = new ItemOrder(
                     order,
                     product,
@@ -234,8 +244,15 @@ public class EditOrderScreen extends Container {
             newItems.add(itemOrder);
         }
 
+        if (clientsComboBox.getSelectedIndex() < 0) {
+            MessageBoxVariables.emptyClient();
+            return;
+        }
 
-        if (products == null || products.isEmpty()) throw new IllegalStateException("Pedido não poder ser editado sem itens");
+        if (newItems.isEmpty()) {
+            MessageBoxVariables.emptyListItemsOrder();
+            return;
+        }
 
         order.setClient(client);
         orderController.updateOrder(order.getId(), order, newItems);

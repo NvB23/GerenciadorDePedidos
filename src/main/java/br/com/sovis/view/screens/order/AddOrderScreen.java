@@ -10,7 +10,6 @@ import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
-import totalcross.ui.dialog.MessageBox;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.Event;
 import totalcross.ui.gfx.Color;
@@ -98,17 +97,19 @@ public class AddOrderScreen extends Container {
             return;
         }
 
-        if (itemOrders == null) {
-            MessageBoxVariables.itemWithQuantityBellowZero();
+        if (itemOrders == null && !contentFieldOrder.isPrimaryAdditionItemOrderTile()) {
+            MessageBoxVariables.itemWithQuantityOrProductEmpty();
+            return;
         }
 
-        if (itemOrders.isEmpty()) {
+        if (itemOrders != null && itemOrders.isEmpty()) {
             MessageBoxVariables.emptyListItemsOrder();
             return;
         }
 
         Order order = new Order(client);
 
+        assert itemOrders != null;
         orderController.createOrder(order, itemOrders);
         MainWindow.getMainWindow().swap(new HomeScreen());
     }

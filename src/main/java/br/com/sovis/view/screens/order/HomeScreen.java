@@ -33,6 +33,7 @@ public class HomeScreen extends Container {
     private final int APP_ID_DELETE_BUTTON = 2;
     private final int APP_ID_EDIT_BUTTON = 3;
     private final int APP_ID_LOCK_BUTTON = 4;
+    private final int APP_ID_FILTER_BUTTON = 5;
 
     public HomeScreen() throws SQLException {
         setRect(0, 0, FILL, FILL);
@@ -58,6 +59,11 @@ public class HomeScreen extends Container {
             productButton.setBackColor(Variables.PRIMARY_COLOR);
             productButton.appId = APP_ID_PRODUCT_BUTTON;
             tabBar.add(productButton, BEFORE, CENTER);
+
+            Button filterButton = new Button(new Image("filter.png").getScaledInstance(30, 30));
+            filterButton.setBackColor(Variables.PRIMARY_COLOR);
+            filterButton.appId = APP_ID_FILTER_BUTTON;
+            tabBar.add(filterButton, BEFORE, CENTER);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
         }
@@ -124,6 +130,14 @@ public class HomeScreen extends Container {
 
             if (((Control) event.target).appId == APP_ID_PRODUCT_BUTTON)
                 MainWindow.getMainWindow().swap(new ProductScreen());
+
+            if (((Control) event.target).appId == APP_ID_FILTER_BUTTON) {
+                try {
+                    MainWindow.getMainWindow().swap(new FilterScreen());
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
 
             if (((Control) event.target).appId == APP_ID_DELETE_BUTTON) {
                 int indexSelectedItem = listContainer.getSelectedIndex();

@@ -103,4 +103,8 @@ public class OrderController {
     public void updateOrderStatus(Long id, OrderStatus newOrderStatus) throws SQLException {
         orderDAO.updateStatusOrder(String.valueOf(id), String.valueOf(newOrderStatus));
     }
+
+    public ArrayList<Order> getOrdersByIdClient(Long id) throws SQLException {
+        return orderDAO.getOrdersByIdClient(String.valueOf(id));
+    }
 }

@@ -94,13 +94,13 @@ public class OrderDAO {
             String idClient = resultSet.getString("idCliente");
             String totalValue = resultSet.getString("valorTotal");
             String orderDate = resultSet.getString("dataPedido");
-            String statusPedido = resultSet.getString("statusPedido");
+            String statusOrder = resultSet.getString("statusPedido");
             Client client = new ClientDAO().getClient(idClient);
             Order order = new Order(
                     Long.parseLong(id),
                     client,
                     Double.parseDouble(totalValue),
-                    orderDate, OrderStatus.valueOf(statusPedido)
+                    orderDate, OrderStatus.valueOf(statusOrder)
             );
             orders.add(order);
         }
@@ -154,5 +154,40 @@ public class OrderDAO {
 
         preparedStatement.close();
         connection.close();
+    }
+
+    public ArrayList<Order> getOrdersByIdClient(String idClientPassed) throws SQLException {
+        ArrayList<Order> orderResultsList = new ArrayList<>();
+
+        Connection connection = Database.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT * FROM pedido WHERE idCliente = ? LIMIT 10;");
+        preparedStatement.setString(1, idClientPassed);
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        while (resultSet.next()) {
+            String id = resultSet.getString("id");
+            String idClient = resultSet.getString("idCliente");
+            String totalValue = resultSet.getString("valorTotal");
+            String orderDate = resultSet.getString("dataPedido");
+            String statusOrder = resultSet.getString("statusPedido");
+            Client client = new ClientDAO().getClient(idClient);
+
+            Order order = new Order(
+                    Long.parseLong(id),
+                    client,
+                    Double.parseDouble(totalValue),
+                    orderDate,
+                    OrderStatus.valueOf(statusOrder)
+            );
+
+            orderResultsList.add(order);
+        }
+
+        preparedStatement.close();
+        connection.close();
+
+        return orderResultsList;
     }
 }

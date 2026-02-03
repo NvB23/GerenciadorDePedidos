@@ -57,12 +57,12 @@ public class LoginScreen extends Container {
     @Override
     public void onEvent(Event event) {
         if (event.type == ControlEvent.PRESSED) {
-            try {
-                MainWindow.getMainWindow().swap(new HomeScreen());
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
             if (event.target == enterButton) {
+                try {
+                    MainWindow.getMainWindow().swap(new HomeScreen());
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
                 try {
                     boolean success = authentication.login(emailEdit.getValue(), passwordEdit.getValue());
                     if (emailEdit.getText().isEmpty() || passwordEdit.getText().isEmpty()) {

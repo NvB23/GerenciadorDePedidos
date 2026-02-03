@@ -5,7 +5,6 @@ import br.com.sovis.controller.OrderController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Client;
 import br.com.sovis.model.Order;
-import br.com.sovis.view.partials.order.ItemOrderTile;
 import br.com.sovis.view.partials.order.OrderTile;
 import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
@@ -24,8 +23,7 @@ public class FilterScreen extends Container {
     private final ClientController clientController = new ClientController();
     private final ArrayList<Client> clients = clientController.getClients();
     private final OrderController orderController = new OrderController();
-    private final ListContainer listContainer = new ListContainer();
-    private boolean isVoidResults = true;
+    private ListContainer listContainer = new ListContainer();
 
     public FilterScreen() throws SQLException {
     }
@@ -75,6 +73,10 @@ public class FilterScreen extends Container {
 
         add(clientsComboBox, LEFT + 12, AFTER + 5, PARENTSIZE + 80, PREFERRED);
 
+        Label noResultsLabel = new Label("Sem Pedidos");
+        noResultsLabel.setForeColor(Variables.SECOND_COLOR);
+        add(noResultsLabel, CENTER, CENTER, PREFERRED, PREFERRED);
+
         try {
             Button searchButton = new Button(new Image("search.png").getScaledInstance(23,23));
             searchButton.setBackColor(Variables.PRIMARY_COLOR);
@@ -82,9 +84,11 @@ public class FilterScreen extends Container {
             searchButton.addPressListener(new PressListener() {
                 @Override
                 public void controlPressed(ControlEvent controlEvent) {
+                    remove(noResultsLabel);
                     int clientSelected = clientsComboBox.getSelectedIndex();
                     if (clientSelected >= 0 && clientSelected < clients.size()) {
-                        isVoidResults = false;
+                        remove(listContainer);
+                        listContainer = new ListContainer();
                         add(listContainer, LEFT, BOTTOM, FILL, PARENTSIZE + 65);
 
                         Client client = clients.get(clientSelected);
@@ -111,13 +115,9 @@ public class FilterScreen extends Container {
                     }
                 }
             });
-            add(searchButton, AFTER + 5, SAME, PREFERRED - 5, PREFERRED - 5);
+            add(searchButton, clientsComboBox.getX() + PARENTSIZE + 80, clientsComboBox.getY(), PREFERRED - 5, PREFERRED - 5);
         } catch (ImageException | IOException e) {
             throw new RuntimeException(e);
         }
-
-        Label noResultsLabel = new Label(!isVoidResults ? "" : "Sem Pedidos");
-        noResultsLabel.setForeColor(Variables.SECOND_COLOR);
-        add(noResultsLabel, CENTER, CENTER, PREFERRED, PREFERRED);
     }
 }

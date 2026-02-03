@@ -1,11 +1,16 @@
 package br.com.sovis.db;
 
+import br.com.sovis.model.User;
+import br.com.sovis.model.enums.UserType;
 import totalcross.db.sqlite.SQLiteUtil;
 import totalcross.sql.PreparedStatement;
 import totalcross.sys.Settings;
 import totalcross.sql.Connection;
 import totalcross.sql.Statement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Database {
     public static SQLiteUtil sqLiteUtil;
@@ -19,15 +24,27 @@ public class Database {
                     "id INTEGER NOT NULL," +
                     "email TEXT NOT NULL UNIQUE," +
                     "senha TEXT NOT NULL," +
+                    "tipo TEXT NOT NULL," +
 
                     "PRIMARY KEY(id AUTOINCREMENT)" +
                     ");"
             );
 
+            ArrayList<User> users = new ArrayList<>();
+            users.add(new User("admin@sovis.com.br", "123", UserType.ADMIN));
+            users.add(new User("naum@sovis.com.br", "123", UserType.COMUM));
+            users.add(new User("kaue@sovis.com.br", "123", UserType.COMUM));
+            users.add(new User("francisco@sovis.com.br", "123", UserType.COMUM));
+
             PreparedStatement preparedStatement = sqLiteUtil.con().prepareStatement(
-                    "INSERT OR IGNORE INTO usuario(email, senha) VALUES(?, ?);");
-            preparedStatement.setString(1, "usuario@sovis.com.br");
-            preparedStatement.setString(2, "123");
+                    "INSERT OR IGNORE INTO usuario(email, senha, tipo) VALUES(?, ?, ?);");
+
+            for (User user : users) {
+                preparedStatement.setString(1, user.getEmail());
+                preparedStatement.setString(2, user.getPassword());
+                preparedStatement.setString(3, String.valueOf(user.getUserType()));
+                preparedStatement.executeUpdate();
+            }
 
             statement.execute("CREATE TABLE IF NOT EXISTS cliente (" +
                     "id INTEGER NOT NULL," +
@@ -73,8 +90,17 @@ public class Database {
                     "FOREIGN KEY(idProduto) REFERENCES produto(id)" +
                     ");"
             );
+            statement.execute("CREATE TABLE IF NOT EXISTS usuario_produto (" +
+                    "id INTEGER NOT NULL," +
+                    "idUsuario INTEGER NOT NULL," +
+                    "idProduto INTEGER NOT NULL," +
 
-            preparedStatement.executeUpdate();
+                    "PRIMARY KEY(id AUTOINCREMENT)," +
+                    "FOREIGN KEY(idUsuario) REFERENCES usuario(id)," +
+                    "FOREIGN KEY(idProduto) REFERENCES produto(id)" +
+                    ");"
+            );
+
             preparedStatement.close();
             statement.close();
         } catch (SQLException e) {

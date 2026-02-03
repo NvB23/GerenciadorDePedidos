@@ -3,6 +3,8 @@ package br.com.sovis.view.screens.product;
 import br.com.sovis.controller.ProductController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Product;
+import br.com.sovis.model.UserLogged;
+import br.com.sovis.model.enums.UserType;
 import br.com.sovis.view.partials.product.ProductTile;
 import br.com.sovis.view.partials.common.MainButton;
 import br.com.sovis.view.screens.order.HomeScreen;
@@ -24,6 +26,7 @@ public class ProductScreen extends Container {
     private final ProductController productController = new ProductController();
     private ListContainer listContainer;
     private ArrayList<Product> productsList;
+    private boolean isUserAdmin = UserLogged.userLogged.getUserType().equals(UserType.ADMIN);
 
     private final int APP_ID_BACK_BUTTON = 999;
     private final int APP_ID_DELETE_BUTTON = 6;
@@ -50,7 +53,12 @@ public class ProductScreen extends Container {
 
         add(tabBar);
 
-        add(new MainButton("product.png", "Adicionar Produto", new AddProductScreen(this)), CENTER, AFTER + 70, PARENTSIZE + 90, PARENTSIZE + 10);
+        add(new MainButton(
+                "product.png",
+                "Adicionar Produto",
+                new AddProductScreen(this),
+                isUserAdmin
+        ), CENTER, AFTER + 70, PARENTSIZE + 90, PARENTSIZE + 10);
 
         Label productsTitle = new Label("Lista de Produtos");
         productsTitle.setFont(Font.getFont(true, 15));
@@ -62,9 +70,12 @@ public class ProductScreen extends Container {
             deleteButton = new Button(new Image("trash.png").getScaledInstance(20,20));
             deleteButton.setBackColor(Variables.PRIMARY_COLOR);
             deleteButton.appId = APP_ID_DELETE_BUTTON;
+            deleteButton.setEnabled(isUserAdmin);
+
             editButton = new Button(new Image("edit.png").getScaledInstance(20,20));
             editButton.setBackColor(Variables.PRIMARY_COLOR);
             editButton.appId = APP_ID_EDIT_BUTTON;
+            editButton.setEnabled(isUserAdmin);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
         }

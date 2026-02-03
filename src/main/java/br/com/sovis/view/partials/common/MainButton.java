@@ -16,6 +16,7 @@ public class MainButton extends Container {
     private final String pathImg;
     private final String text;
     private final Container toContainer;
+    private final boolean isEnabled;
 
     private Button addButton;
 
@@ -23,6 +24,14 @@ public class MainButton extends Container {
         this.pathImg = path;
         this.text = text;
         this.toContainer = toContainer;
+        this.isEnabled = true;
+    }
+
+    public MainButton(String path, String text, Container toContainer, boolean isEnabled) {
+        this.pathImg = path;
+        this.text = text;
+        this.toContainer = toContainer;
+        this.isEnabled = isEnabled;
     }
 
     @Override
@@ -36,6 +45,7 @@ public class MainButton extends Container {
             addButton.setBackColor(Variables.PRIMARY_COLOR);
             addButton.setForeColor(Color.WHITE);
             addButton.appId = -123;
+            addButton.setEnabled(isEnabled);
             add(addButton, 0, 0, FILL, FILL);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);

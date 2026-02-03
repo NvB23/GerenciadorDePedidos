@@ -6,6 +6,7 @@ import br.com.sovis.model.Order;
 import br.com.sovis.model.enums.OrderStatus;
 import br.com.sovis.view.partials.common.MainButton;
 import br.com.sovis.view.partials.order.OrderTile;
+import br.com.sovis.view.screens.LoginScreen;
 import br.com.sovis.view.screens.product.ProductScreen;
 import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
@@ -34,6 +35,7 @@ public class HomeScreen extends Container {
     private final int APP_ID_EDIT_BUTTON = 3;
     private final int APP_ID_LOCK_BUTTON = 4;
     private final int APP_ID_FILTER_BUTTON = 5;
+    private final int APP_ID_LOGOUT_BUTTON = 999;
 
     public HomeScreen() throws SQLException {
         setRect(0, 0, FILL, FILL);
@@ -45,22 +47,32 @@ public class HomeScreen extends Container {
         tabBar.setBackColor(Variables.PRIMARY_COLOR);
         tabBar.setRect(0,0, FILL, PARENTSIZE + 8);
 
+        Button logoutButton;
+        try {
+            logoutButton = new Button(new Image("logout.png").getScaledInstance(25, 25));
+            logoutButton.setBackColor(Variables.PRIMARY_COLOR);
+            logoutButton.appId = APP_ID_LOGOUT_BUTTON;
+            tabBar.add(logoutButton, LEFT, CENTER);
+        } catch (ImageException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
         Label titleLabel = new Label("Pedidos");
         titleLabel.setForeColor(Color.WHITE);
-        tabBar.add(titleLabel,  LEFT + 18, CENTER);
+        tabBar.add(titleLabel,  AFTER + 8, CENTER);
 
         try {
-            Button clientButton = new Button(new Image("tab-client.png").getScaledInstance(30, 30));
+            Button clientButton = new Button(new Image("tab-client.png").getScaledInstance(25, 25));
             clientButton.setBackColor(Variables.PRIMARY_COLOR);
             clientButton.appId = APP_ID_CLIENT_BUTTON;
             tabBar.add(clientButton, RIGHT, CENTER);
 
-            Button productButton = new Button(new Image("tab-product.png").getScaledInstance(30, 30));
+            Button productButton = new Button(new Image("tab-product.png").getScaledInstance(25, 25));
             productButton.setBackColor(Variables.PRIMARY_COLOR);
             productButton.appId = APP_ID_PRODUCT_BUTTON;
             tabBar.add(productButton, BEFORE, CENTER);
 
-            Button filterButton = new Button(new Image("filter.png").getScaledInstance(30, 30));
+            Button filterButton = new Button(new Image("filter.png").getScaledInstance(25, 25));
             filterButton.setBackColor(Variables.PRIMARY_COLOR);
             filterButton.appId = APP_ID_FILTER_BUTTON;
             tabBar.add(filterButton, BEFORE, CENTER);
@@ -125,6 +137,9 @@ public class HomeScreen extends Container {
     @Override
     public void onEvent(Event event) {
         if (event.type == ControlEvent.PRESSED && event.target instanceof Button) {
+            if (((Control) event.target).appId == APP_ID_LOGOUT_BUTTON)
+                MainWindow.getMainWindow().swap(new LoginScreen());
+
             if (((Control) event.target).appId == APP_ID_CLIENT_BUTTON)
                 MainWindow.getMainWindow().swap(new ClientScreen());
 

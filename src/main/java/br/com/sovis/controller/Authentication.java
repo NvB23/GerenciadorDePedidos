@@ -5,10 +5,10 @@ import br.com.sovis.model.User;
 
 import java.sql.SQLException;
 
-public class Authentication {
-    private final UserDAO userDAO = new UserDAO();
+public abstract class Authentication {
+    private static final UserDAO userDAO = new UserDAO();
 
-    public boolean login(String email, String password) throws SQLException {
+    public static boolean login(String email, String password) throws SQLException {
         User result = userDAO.getUserByEmailSenha(email, password);
         if (result != null) {
             return true;

@@ -1,7 +1,9 @@
 package br.com.sovis.view.screens;
 
 import br.com.sovis.controller.Authentication;
+import br.com.sovis.dao.UserDAO;
 import br.com.sovis.exception.AuthenticationException;
+import br.com.sovis.model.UserLogged;
 import br.com.sovis.view.screens.order.HomeScreen;
 import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
@@ -21,7 +23,6 @@ public class LoginScreen extends Container {
     Button enterButton;
     Edit emailEdit = new Edit();
     Edit passwordEdit = new Edit();
-    Authentication authentication = new Authentication();
 
     public LoginScreen() {
         setBackColor(Variables.SECOND_COLOR);
@@ -58,13 +59,13 @@ public class LoginScreen extends Container {
     public void onEvent(Event event) {
         if (event.type == ControlEvent.PRESSED) {
             if (event.target == enterButton) {
-                try {
+                /*try {
                     MainWindow.getMainWindow().swap(new HomeScreen());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
-                }
+                }*/
                 try {
-                    boolean success = authentication.login(emailEdit.getValue(), passwordEdit.getValue());
+                    boolean success = Authentication.login(emailEdit.getValue(), passwordEdit.getValue());
                     if (emailEdit.getText().isEmpty() || passwordEdit.getText().isEmpty()) {
                         MessageBoxVariables.voidFields();
                         return;
@@ -73,6 +74,9 @@ public class LoginScreen extends Container {
                     if (!success) {
                         MessageBoxVariables.invalidCredentials();
                     } else {
+                        UserLogged.userLogged = new UserDAO().getUserByEmailSenha(
+                                emailEdit.getText(),
+                                passwordEdit.getText());
                         MainWindow.getMainWindow().swap(new HomeScreen());
                     }
                 } catch (SQLException e) {

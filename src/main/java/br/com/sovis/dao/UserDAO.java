@@ -2,6 +2,7 @@ package br.com.sovis.dao;
 
 import br.com.sovis.db.Database;
 import br.com.sovis.model.User;
+import br.com.sovis.model.enums.UserType;
 import totalcross.sql.Connection;
 import totalcross.sql.PreparedStatement;
 import totalcross.sql.Statement;
@@ -73,7 +74,8 @@ public class UserDAO {
             String id = resultSet.getString("id");
             String email = resultSet.getString("email");
             String password = resultSet.getString("senha");
-            User user = new User(Long.parseLong(id), email, password);
+            String userType = resultSet.getString("tipo");
+            User user = new User(Long.parseLong(id), email, password, UserType.valueOf(userType));
             usuarios.add(user);
         }
 
@@ -94,7 +96,8 @@ public class UserDAO {
             String id = resultSet.getString("id");
             String email = resultSet.getString("email");
             String password = resultSet.getString("senha");
-            return new User(Long.parseLong(id), email, password);
+            String userType = resultSet.getString("tipo");
+            return new User(Long.parseLong(id), email, password, UserType.valueOf(userType));
         }
 
         resultSet.close();
@@ -117,7 +120,8 @@ public class UserDAO {
             String id = resultSet.getString("id");
             String email = resultSet.getString("email");
             String password = resultSet.getString("senha");
-            return new User(Long.parseLong(id), email, password);
+            String userType = resultSet.getString("tipo");
+            return new User(Long.parseLong(id), email, password, UserType.valueOf(userType));
         }
 
         resultSet.close();

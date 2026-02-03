@@ -5,13 +5,19 @@ import br.com.sovis.controller.OrderController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Client;
 import br.com.sovis.model.Order;
+import br.com.sovis.model.enums.OrderStatus;
+import br.com.sovis.view.partials.order.ItemOrderTile;
 import br.com.sovis.view.partials.order.OrderTile;
+import br.com.sovis.view.screens.client.ClientScreen;
+import br.com.sovis.view.screens.product.ProductScreen;
 import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
 import totalcross.ui.event.ControlEvent;
+import totalcross.ui.event.Event;
 import totalcross.ui.event.PressListener;
+import totalcross.ui.font.Font;
 import totalcross.ui.gfx.Color;
 import totalcross.ui.image.Image;
 import totalcross.ui.image.ImageException;
@@ -25,7 +31,45 @@ public class FilterScreen extends Container {
     private final OrderController orderController = new OrderController();
     private ListContainer listContainer = new ListContainer();
 
+    private ArrayList<Order> resultsOrder;
+
+    private Client client;
+
+    private final Label noSearchLabel = new Label("Sem Busca Realizada");
+
+    private boolean showNoSearchLabel = true;
+    private boolean enabledButtons = false;
+
+    private final int APP_ID_DELETE_BUTTON = 1;
+    private final int APP_ID_EDIT_BUTTON = 2;
+    private final int APP_ID_LOCK_BUTTON = 3;
+
     public FilterScreen() throws SQLException {
+    }
+
+    public FilterScreen(Client client) throws SQLException {
+        this.client = client;
+
+        showNoSearchLabel = false;
+        enabledButtons = true;
+
+        listContainer = new ListContainer();
+        listContainer.setRect( LEFT, BOTTOM, FILL, PARENTSIZE + 62);
+        add(listContainer);
+
+        resultsOrder = orderController.getOrdersByIdClient(client.getId());
+
+        for (Order order : resultsOrder) {
+            OrderTile orderTile = new OrderTile(
+                    order.getId(),
+                    order.getTotalValue(),
+                    order.getOrderDate(),
+                    order.getClient().getName(),
+                    order.getStatusPedido()
+            );
+
+            listContainer.addContainer(orderTile);
+        }
     }
 
     @Override
@@ -73,9 +117,43 @@ public class FilterScreen extends Container {
 
         add(clientsComboBox, LEFT + 12, AFTER + 5, PARENTSIZE + 80, PREFERRED);
 
-        Label noResultsLabel = new Label("Sem Pedidos");
+        if (client != null) clientsComboBox.setValue(client.getId() + " " + client.getName());
+
+        Label orderTitle = new Label("Lista de Pedidos");
+        orderTitle.setFont(Font.getFont(true, 15));
+        add(orderTitle, LEFT + 10, AFTER + 30);
+
+        Button deleteButton ,editButton, closeButton;
+
+        try {
+            deleteButton = new Button(new Image("trash.png").getScaledInstance(20,20));
+            deleteButton.setBackColor(Variables.PRIMARY_COLOR);
+            deleteButton.setEnabled(enabledButtons);
+            deleteButton.appId = APP_ID_DELETE_BUTTON;
+
+            editButton = new Button(new Image("edit.png").getScaledInstance(20,20));
+            editButton.setBackColor(Variables.PRIMARY_COLOR);
+            editButton.appId = APP_ID_EDIT_BUTTON;
+            editButton.setEnabled(enabledButtons);
+
+            closeButton = new Button(new Image("padlock.png").getScaledInstance(20,20));
+            closeButton.setBackColor(Variables.PRIMARY_COLOR);
+            closeButton.appId = APP_ID_LOCK_BUTTON;
+            closeButton.setEnabled(enabledButtons);
+        } catch (ImageException | IOException e) {
+            throw new ButtonException(e);
+        }
+        add(deleteButton, RIGHT - 10, SAME - 5, PREFERRED - 5, PREFERRED - 5);
+        add(editButton, BEFORE - 10, SAME, PREFERRED - 5, PREFERRED - 5);
+        add(closeButton, BEFORE - 10, SAME, PREFERRED - 5, PREFERRED - 5);
+
+        if (showNoSearchLabel) {
+            noSearchLabel.setForeColor(Variables.SECOND_COLOR);
+            add(noSearchLabel, CENTER, CENTER, PREFERRED, PREFERRED);
+        }
+
+        Label noResultsLabel = new Label("Sem Resultados Encontrados");
         noResultsLabel.setForeColor(Variables.SECOND_COLOR);
-        add(noResultsLabel, CENTER, CENTER, PREFERRED, PREFERRED);
 
         try {
             Button searchButton = new Button(new Image("search.png").getScaledInstance(23,23));
@@ -84,28 +162,37 @@ public class FilterScreen extends Container {
             searchButton.addPressListener(new PressListener() {
                 @Override
                 public void controlPressed(ControlEvent controlEvent) {
+                    remove(noSearchLabel);
                     remove(noResultsLabel);
                     int clientSelected = clientsComboBox.getSelectedIndex();
                     if (clientSelected >= 0 && clientSelected < clients.size()) {
                         remove(listContainer);
                         listContainer = new ListContainer();
-                        add(listContainer, LEFT, BOTTOM, FILL, PARENTSIZE + 65);
+                        add(listContainer, LEFT, BOTTOM, FILL, PARENTSIZE + 62);
 
                         Client client = clients.get(clientSelected);
 
                         try {
-                            ArrayList<Order> resultsOrder = orderController.getOrdersByIdClient(client.getId());
+                            resultsOrder = orderController.getOrdersByIdClient(client.getId());
 
-                            for (Order order : resultsOrder) {
-                                OrderTile orderTile = new OrderTile(
-                                        order.getId(),
-                                        order.getTotalValue(),
-                                        order.getOrderDate(),
-                                        order.getClient().getName(),
-                                        order.getStatusPedido()
-                                );
+                            if (resultsOrder.isEmpty()) {
+                                add(noResultsLabel, CENTER, CENTER, PREFERRED, PREFERRED);
+                            }
+                            else {
+                                for (Order order : resultsOrder) {
+                                    OrderTile orderTile = new OrderTile(
+                                            order.getId(),
+                                            order.getTotalValue(),
+                                            order.getOrderDate(),
+                                            order.getClient().getName(),
+                                            order.getStatusPedido()
+                                    );
 
-                                listContainer.addContainer(orderTile);
+                                    listContainer.addContainer(orderTile);
+                                }
+                                deleteButton.setEnabled(true);
+                                editButton.setEnabled(true);
+                                closeButton.setEnabled(true);
                             }
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
@@ -118,6 +205,57 @@ public class FilterScreen extends Container {
             add(searchButton, clientsComboBox.getX() + PARENTSIZE + 80, clientsComboBox.getY(), PREFERRED - 5, PREFERRED - 5);
         } catch (ImageException | IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+    public void onEvent(Event event) {
+        if (event.type == ControlEvent.PRESSED && event.target instanceof Button) {
+            if (((Control) event.target).appId == APP_ID_DELETE_BUTTON) {
+                int indexSelectedItem = listContainer.getSelectedIndex();
+                try {
+                    if (indexSelectedItem >= 0 && indexSelectedItem < resultsOrder.size()) {
+                        Order order = resultsOrder.get(indexSelectedItem);
+                        orderController.deleteOrder(order.getId());
+                        listContainer.remove(listContainer.getContainer(indexSelectedItem));
+                        MainWindow.getMainWindow().swap(new FilterScreen(order.getClient()));
+                    } else {
+                        MessageBoxVariables.notSelectedItem();
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            if (((Control) event.target).appId == APP_ID_EDIT_BUTTON) {
+                int indexSelectedItem = listContainer.getSelectedIndex();
+                try {
+                    if (indexSelectedItem >= 0 && indexSelectedItem < resultsOrder.size()) {
+                        Order order = resultsOrder.get(indexSelectedItem);
+                        if (order.getStatusPedido().equals(OrderStatus.FECHADO))
+                            MessageBoxVariables.orderLocked();
+                        else MainWindow.getMainWindow().swap(new EditOrderScreen(this, order.getId()));
+                    } else {
+                        MessageBoxVariables.notSelectedItem();
+                    }
+
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            if (((Control) event.target).appId == APP_ID_LOCK_BUTTON) {
+                int indexSelectedItem = listContainer.getSelectedIndex();
+                try {
+                    if (indexSelectedItem >= 0 && indexSelectedItem < resultsOrder.size()) {
+                        Order order = resultsOrder.get(indexSelectedItem);
+                        orderController.updateOrderStatus(order.getId(), OrderStatus.FECHADO);
+                        MainWindow.getMainWindow().swap(new FilterScreen(order.getClient()));
+                    } else {
+                        MessageBoxVariables.notSelectedItem();
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 }

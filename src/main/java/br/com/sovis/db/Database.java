@@ -9,8 +9,6 @@ import totalcross.sql.Connection;
 import totalcross.sql.Statement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Database {
     public static SQLiteUtil sqLiteUtil;
@@ -70,6 +68,7 @@ public class Database {
             statement.execute("CREATE TABLE IF NOT EXISTS pedido (" +
                     "id INTEGER NOT NULL," +
                     "idCliente INTEGER NOT NULL," +
+                    "idUsuario INTEGER NOT NULL," +
                     "valorTotal REAL NOT NULL," +
                     "dataPedido TEXT NOT NULL," +
                     "statusPedido TEXT NOT NULL," +

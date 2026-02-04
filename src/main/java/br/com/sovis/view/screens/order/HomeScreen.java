@@ -3,7 +3,9 @@ package br.com.sovis.view.screens.order;
 import br.com.sovis.controller.OrderController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Order;
+import br.com.sovis.model.UserLogged;
 import br.com.sovis.model.enums.OrderStatus;
+import br.com.sovis.model.enums.UserType;
 import br.com.sovis.view.partials.common.MainButton;
 import br.com.sovis.view.partials.order.OrderTile;
 import br.com.sovis.view.screens.LoginScreen;
@@ -27,7 +29,7 @@ import java.util.ArrayList;
 public class HomeScreen extends Container {
     private final OrderController orderController = new OrderController();
     private ListContainer listContainer;
-    private final ArrayList<Order> orderList = orderController.getOrders();
+    private final ArrayList<Order> orderList;
 
     private final int APP_ID_CLIENT_BUTTON = 0;
     private final int APP_ID_PRODUCT_BUTTON = 1;
@@ -38,6 +40,11 @@ public class HomeScreen extends Container {
     private final int APP_ID_LOGOUT_BUTTON = 999;
 
     public HomeScreen() throws SQLException {
+        if (UserLogged.userLogged.getUserType().equals(UserType.ADMIN)) {
+            orderList = orderController.getOrders();
+        } else {
+            orderList = orderController.getOrdersOfUser(UserLogged.userLogged.getId());
+        }
         setRect(0, 0, FILL, FILL);
     }
 
@@ -174,7 +181,7 @@ public class HomeScreen extends Container {
                 int indexSelectedItem = listContainer.getSelectedIndex();
                 try {
                     if (indexSelectedItem >= 0 && indexSelectedItem < orderList.size()) {
-                        Order order = orderController.getOrders().get(indexSelectedItem);
+                        Order order = orderList.get(indexSelectedItem);
                         if (order.getStatusPedido().equals(OrderStatus.FECHADO))
                             MessageBoxVariables.orderLocked();
                         else MainWindow.getMainWindow().swap(new EditOrderScreen(this, order.getId()));
@@ -191,7 +198,7 @@ public class HomeScreen extends Container {
                 int indexSelectedItem = listContainer.getSelectedIndex();
                 try {
                     if (indexSelectedItem >= 0 && indexSelectedItem < orderList.size()) {
-                        Order order = orderController.getOrders().get(indexSelectedItem);
+                        Order order = orderList.get(indexSelectedItem);
                         orderController.updateOrderStatus(order.getId(), OrderStatus.FECHADO);
                         MainWindow.getMainWindow().swap(new HomeScreen());
                     } else {

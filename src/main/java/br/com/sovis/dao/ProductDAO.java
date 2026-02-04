@@ -75,6 +75,29 @@ public class ProductDAO {
         return products;
     }
 
+    public ArrayList<Product> getProductsOfUser(String idUser) throws SQLException {
+        ArrayList<Product> products = new ArrayList<>();
+        Connection connection = Database.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT * FROM usuario_produto WHERE idUsuario = ?;");
+        preparedStatement.setString(1, idUser);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        while (resultSet.next()) {
+            String idProduct = resultSet.getString("idProduto");
+
+            Product product = getProductById(idProduct);
+
+            products.add(product);
+        }
+
+        resultSet.close();
+        preparedStatement.close();
+        connection.close();
+
+        return products;
+    }
+
     public Product getProductById(String idPassed) throws SQLException {
         Connection connection = Database.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM produto WHERE id = ?;");

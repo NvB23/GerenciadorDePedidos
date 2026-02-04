@@ -4,6 +4,7 @@ import br.com.sovis.dao.ItemOrderDAO;
 import br.com.sovis.dao.OrderDAO;
 import br.com.sovis.model.ItemOrder;
 import br.com.sovis.model.Order;
+import br.com.sovis.model.User;
 import br.com.sovis.model.enums.OrderStatus;
 
 import java.sql.SQLException;
@@ -13,7 +14,7 @@ public class OrderController {
     private final OrderDAO orderDAO = new OrderDAO();
     private final ItemOrderDAO itemOrderDAO = new ItemOrderDAO();
 
-    public void createOrder(Order order, ArrayList<ItemOrder> itemOrders) throws SQLException {
+    public void createOrder(Order order, User user, ArrayList<ItemOrder> itemOrders) throws SQLException {
         Double totalValue = 0.0;
         for (ItemOrder itemOrder : itemOrders) {
             totalValue += itemOrder.getItemValue();
@@ -21,6 +22,7 @@ public class OrderController {
 
         Long idOrderInserted = orderDAO.createOrder(
                 String.valueOf(order.getClient().getId()),
+                String.valueOf(user.getId()),
                 String.valueOf(totalValue),
                 order.getOrderDate(),
                 String.valueOf(order.getStatusPedido())
@@ -96,6 +98,10 @@ public class OrderController {
         return orderDAO.getOrders();
     }
 
+    public ArrayList<Order> getOrdersOfUser(Long idUser) throws SQLException {
+        return orderDAO.getOrdersByUser(String.valueOf(idUser));
+    }
+
     public Order getOrdersById(Long id) throws SQLException {
         return orderDAO.getOrderById(String.valueOf(id));
     }
@@ -106,5 +112,9 @@ public class OrderController {
 
     public ArrayList<Order> getOrdersByIdClient(Long id) throws SQLException {
         return orderDAO.getOrdersByIdClient(String.valueOf(id));
+    }
+
+    public ArrayList<Order> getOrdersOfUserByIdClient(Long idClient, Long idUser) throws SQLException {
+        return orderDAO.getOrdersOfUserByIdClient(String.valueOf(idClient), String.valueOf(idUser));
     }
 }

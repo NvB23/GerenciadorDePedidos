@@ -7,11 +7,12 @@ import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Client;
 import br.com.sovis.model.ItemOrder;
 import br.com.sovis.model.Product;
+import br.com.sovis.model.UserLogged;
+import br.com.sovis.model.enums.UserType;
 import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
-import totalcross.ui.dialog.MessageBox;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.PressListener;
 import totalcross.ui.image.Image;
@@ -82,7 +83,11 @@ public class ContentFieldOrder extends Container {
                 @Override
                 public void controlPressed(ControlEvent controlEvent) {
                     try {
-                        products = productController.listarProdutos();
+                        if (UserLogged.userLogged.getUserType().equals(UserType.ADMIN)) {
+                            products = productController.getAllProducts();
+                        } else {
+                            products = productController.getProductsOfUser(UserLogged.userLogged.getId());
+                        }
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }

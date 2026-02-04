@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public class Order {
     private Long id;
     private Client client;
+    private User user;
     private Double totalValue;
     private OrderStatus orderStatus = OrderStatus.PENDENTE;
     private String orderDate = LocalDateTime.now().toLocalDate().toString();
@@ -15,9 +16,10 @@ public class Order {
         this.client = client;
     }
 
-    public Order(Long id, Client client, Double totalValue, String orderDate, OrderStatus orderStatus) {
+    public Order(Long id, Client client, User user, Double totalValue, String orderDate, OrderStatus orderStatus) {
         this.id = id;
         this.client = client;
+        this.user = user;
         this.totalValue = totalValue;
         this.orderStatus = orderStatus;
         this.orderDate = orderDate;
@@ -37,6 +39,14 @@ public class Order {
 
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Double getTotalValue() {

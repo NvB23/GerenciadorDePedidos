@@ -30,8 +30,12 @@ public class ProductController {
         productDAO.deleteProduct(String.valueOf(id));
     }
 
-    public ArrayList<Product> listarProdutos() throws SQLException {
+    public ArrayList<Product> getAllProducts() throws SQLException {
         return productDAO.getProducts();
+    }
+
+    public ArrayList<Product> getProductsOfUser(Long idUser) throws SQLException {
+        return productDAO.getProductsOfUser(String.valueOf(idUser));
     }
 
     public Product getProductById(Long id) throws SQLException {

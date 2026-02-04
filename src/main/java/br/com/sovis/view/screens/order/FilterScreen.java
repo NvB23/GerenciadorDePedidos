@@ -5,7 +5,9 @@ import br.com.sovis.controller.OrderController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Client;
 import br.com.sovis.model.Order;
+import br.com.sovis.model.UserLogged;
 import br.com.sovis.model.enums.OrderStatus;
+import br.com.sovis.model.enums.UserType;
 import br.com.sovis.view.partials.order.ItemOrderTile;
 import br.com.sovis.view.partials.order.OrderTile;
 import br.com.sovis.view.screens.client.ClientScreen;
@@ -57,7 +59,11 @@ public class FilterScreen extends Container {
         listContainer.setRect( LEFT, BOTTOM, FILL, PARENTSIZE + 62);
         add(listContainer);
 
-        resultsOrder = orderController.getOrdersByIdClient(client.getId());
+        if (UserLogged.userLogged.getUserType().equals(UserType.ADMIN)) {
+            resultsOrder = orderController.getOrdersByIdClient(client.getId());
+        } else {
+            resultsOrder = orderController.getOrdersOfUserByIdClient(client.getId(), UserLogged.userLogged.getId());
+        }
 
         for (Order order : resultsOrder) {
             OrderTile orderTile = new OrderTile(
@@ -173,7 +179,11 @@ public class FilterScreen extends Container {
                         Client client = clients.get(clientSelected);
 
                         try {
-                            resultsOrder = orderController.getOrdersByIdClient(client.getId());
+                            if (UserLogged.userLogged.getUserType().equals(UserType.ADMIN)) {
+                                resultsOrder = orderController.getOrdersByIdClient(client.getId());
+                            } else {
+                                resultsOrder = orderController.getOrdersOfUserByIdClient(client.getId(), UserLogged.userLogged.getId());
+                            }
 
                             if (resultsOrder.isEmpty()) {
                                 add(noResultsLabel, CENTER, CENTER, PREFERRED, PREFERRED);

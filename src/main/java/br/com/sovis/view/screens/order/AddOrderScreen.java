@@ -5,6 +5,7 @@ import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Client;
 import br.com.sovis.model.ItemOrder;
 import br.com.sovis.model.Order;
+import br.com.sovis.model.UserLogged;
 import br.com.sovis.view.partials.order.ContentFieldOrder;
 import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
@@ -110,7 +111,7 @@ public class AddOrderScreen extends Container {
         Order order = new Order(client);
 
         assert itemOrders != null;
-        orderController.createOrder(order, itemOrders);
+        orderController.createOrder(order, UserLogged.userLogged, itemOrders);
         MainWindow.getMainWindow().swap(new HomeScreen());
     }
 }

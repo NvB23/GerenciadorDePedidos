@@ -26,7 +26,7 @@ public class ProductScreen extends Container {
     private final ProductController productController = new ProductController();
     private ListContainer listContainer;
     private ArrayList<Product> productsList;
-    private boolean isUserAdmin = UserLogged.userLogged.getUserType().equals(UserType.ADMIN);
+    private final boolean isUserAdmin = UserLogged.userLogged.getUserType().equals(UserType.ADMIN);
 
     private final int APP_ID_BACK_BUTTON = 999;
     private final int APP_ID_DELETE_BUTTON = 6;
@@ -83,7 +83,11 @@ public class ProductScreen extends Container {
         add(editButton, BEFORE - 10, SAME, PREFERRED - 5, PREFERRED - 5);
 
         try {
-            productsList = productController.listarProdutos();
+            if (isUserAdmin) {
+                productsList = productController.getAllProducts();
+            } else {
+                productsList = productController.getProductsOfUser(UserLogged.userLogged.getId());
+            }
 
             if (productsList.isEmpty()) {
                 Label noProductsLabel = new Label("Sem produtos cadastrados");
@@ -138,7 +142,7 @@ public class ProductScreen extends Container {
                 int indexSelectedItem = listContainer.getSelectedIndex();
                 try {
                     if (indexSelectedItem >= 0 && indexSelectedItem < productsList.size()) {
-                        Product product = productController.listarProdutos().get(indexSelectedItem);
+                        Product product = productsList.get(indexSelectedItem);
                         MainWindow.getMainWindow().swap(new EditProductScreen(this, product.getId()));
                     }  else {
                         MessageBoxVariables.notSelectedItem();

@@ -5,10 +5,8 @@ import br.com.sovis.controller.ItemOrderController;
 import br.com.sovis.controller.OrderController;
 import br.com.sovis.controller.ProductController;
 import br.com.sovis.exception.ButtonException;
-import br.com.sovis.model.Client;
-import br.com.sovis.model.ItemOrder;
-import br.com.sovis.model.Order;
-import br.com.sovis.model.Product;
+import br.com.sovis.model.*;
+import br.com.sovis.model.enums.UserType;
 import br.com.sovis.view.partials.order.ItemOrderTile;
 import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
@@ -111,7 +109,11 @@ public class EditOrderScreen extends Container {
         ArrayList<ItemOrder> itemOrders;
 
         try {
-            products = productController.listarProdutos();
+            if (UserLogged.userLogged.getUserType().equals(UserType.ADMIN)) {
+                products = productController.getAllProducts();
+            } else {
+                products = productController.getProductsOfUser(UserLogged.userLogged.getId());
+            }
             itemOrders = itemOrderController.getItemOrdersById(order.getId());
         } catch (SQLException e) {
             throw new RuntimeException(e);

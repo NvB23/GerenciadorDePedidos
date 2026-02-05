@@ -4,10 +4,10 @@ import br.com.sovis.controller.ClientController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Client;
 import br.com.sovis.view.partials.client.ContentFieldClient;
+import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
-import totalcross.ui.dialog.MessageBox;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.Event;
 import totalcross.ui.gfx.Color;
@@ -15,6 +15,7 @@ import totalcross.ui.image.Image;
 import totalcross.ui.image.ImageException;
 
 import java.sql.SQLException;
+import java.util.regex.Pattern;
 
 public class AddClientScreen extends Container {
     private final ClientController clienteController = new ClientController();
@@ -90,10 +91,23 @@ public class AddClientScreen extends Container {
         String email = contentFieldCliente.getEmailEdit();
         String phone = contentFieldCliente.getPhoneEdit();
 
-        if (name.isEmpty() || email.isEmpty() || phone.isEmpty()) {
-            new MessageBox("Erro!", "Preencha todos os campos.").popup();
+        if (name.trim().isEmpty() || email.trim().isEmpty() || phone.trim().isEmpty()) {
+            MessageBoxVariables.fieldsEmpty();
             return;
         }
+
+        if (!Pattern.matches("[a-zA-Z0-9._]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}", email)) {
+            MessageBoxVariables.invalidEmail();
+            return;
+        }
+
+        for (char c : phone.toCharArray()) {
+            if (Character.isLetter(c)) {
+                MessageBoxVariables.invalidPhone();
+                return;
+            }
+        }
+
         Client client = new Client(
                 name,
                 email,

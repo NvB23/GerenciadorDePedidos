@@ -3,6 +3,7 @@ package br.com.sovis.view.screens.client;
 import br.com.sovis.controller.ClientController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Client;
+import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
@@ -13,6 +14,7 @@ import totalcross.ui.image.Image;
 import totalcross.ui.image.ImageException;
 
 import java.sql.SQLException;
+import java.util.regex.Pattern;
 
 public class EditClientScreen extends Container {
     private final Container toContainer;
@@ -108,7 +110,28 @@ public class EditClientScreen extends Container {
     }
 
     private void editClient() throws SQLException {
-        Client client = new Client(nameEdit.getText(), emailEdit.getText(), phoneEdit.getText());
+        String name = nameEdit.getText();
+        String email = emailEdit.getText();
+        String phone = phoneEdit.getText();
+
+        if (name.trim().isEmpty() || email.trim().isEmpty() || phone.trim().isEmpty()) {
+            MessageBoxVariables.fieldsEmpty();
+            return;
+        }
+
+        if (!Pattern.matches("[a-zA-Z0-9._]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}", email)) {
+            MessageBoxVariables.invalidEmail();
+            return;
+        }
+
+        for (char c : phone.toCharArray()) {
+            if (Character.isLetter(c)) {
+                MessageBoxVariables.invalidPhone();
+                return;
+            }
+        }
+
+        Client client = new Client(name, email, phone);
         clientController.updateClient(clientEdit.getId(), client);
         MainWindow.getMainWindow().swap(new ClientScreen());
     }

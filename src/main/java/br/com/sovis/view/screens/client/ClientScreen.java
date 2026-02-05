@@ -1,8 +1,10 @@
 package br.com.sovis.view.screens.client;
 
 import br.com.sovis.controller.ClientController;
+import br.com.sovis.controller.OrderController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Client;
+import br.com.sovis.model.Order;
 import br.com.sovis.view.partials.client.ClientTile;
 import br.com.sovis.view.partials.common.MainButton;
 import br.com.sovis.view.screens.order.HomeScreen;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 
 public class ClientScreen extends Container {
     private final ClientController clientController = new ClientController();
+    private final OrderController orderController = new OrderController();
     private ListContainer listContainer;
     private ArrayList<Client> clientList;
 
@@ -112,6 +115,13 @@ public class ClientScreen extends Container {
                 try {
                     if (itemSelectedIndex >= 0 && itemSelectedIndex < clientList.size()) {
                         Client client = clientList.get(itemSelectedIndex);
+
+                       for (Order order : orderController.getOrders()) {
+                           if (order.getClient().getId() == client.getId()) {
+                               MessageBoxVariables.alreadyExistsAOrderWithThisClient();
+                               return;
+                           }
+                       }
                         clientController.deleteClient(client.getId());
                         listContainer.remove(listContainer.getContainer(itemSelectedIndex));
                         MainWindow.getMainWindow().swap(new ClientScreen());

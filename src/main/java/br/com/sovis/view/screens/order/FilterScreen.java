@@ -242,7 +242,7 @@ public class FilterScreen extends Container {
                         Order order = resultsOrder.get(indexSelectedItem);
                         if (order.getStatusPedido().equals(OrderStatus.FECHADO))
                             MessageBoxVariables.orderLocked();
-                        else MainWindow.getMainWindow().swap(new EditOrderScreen(this, order.getId()));
+                        else MainWindow.getMainWindow().swap(new EditOrderScreen(new FilterScreen(order.getClient()), order.getId()));
                     } else {
                         MessageBoxVariables.notSelectedItem();
                     }

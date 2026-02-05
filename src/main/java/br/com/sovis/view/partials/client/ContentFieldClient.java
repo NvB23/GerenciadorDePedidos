@@ -33,7 +33,6 @@ public class ContentFieldClient extends Container {
         phoneLabel.setForeColor(Variables.SECOND_COLOR);
         add(phoneLabel, PARENTSIZE + 50, AFTER + 30 , PARENTSIZE + 90, PREFERRED);
         phoneEdit = new Edit("99 99999-9999");
-        phoneEdit.setValidChars("0123456789");
         phoneEdit.setForeColor(Variables.PRIMARY_COLOR);
         phoneEdit.setMode(Edit.NORMAL, true);
         add(phoneEdit, CENTER, AFTER + 5, PARENTSIZE + 90, PREFERRED - 20);

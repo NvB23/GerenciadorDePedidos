@@ -258,6 +258,10 @@ public class EditOrderScreen extends Container {
 
         order.setClient(client);
         orderController.updateOrder(order.getId(), order, newItems);
-        MainWindow.getMainWindow().swap(new HomeScreen());
+        if (toContainer instanceof FilterScreen) {
+            MainWindow.getMainWindow().swap(new FilterScreen(clients.get(clientsComboBox.getSelectedIndex())));
+        } else {
+            MainWindow.getMainWindow().swap(new HomeScreen());
+        }
     }
 }

@@ -1,7 +1,9 @@
 package br.com.sovis.view.screens.product;
 
+import br.com.sovis.controller.ItemOrderController;
 import br.com.sovis.controller.ProductController;
 import br.com.sovis.exception.ButtonException;
+import br.com.sovis.model.ItemOrder;
 import br.com.sovis.model.Product;
 import br.com.sovis.model.UserLogged;
 import br.com.sovis.model.enums.UserType;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 
 public class ProductScreen extends Container {
     private final ProductController productController = new ProductController();
+    private final ItemOrderController itemOrderController = new ItemOrderController();
     private ListContainer listContainer;
     private ArrayList<Product> productsList;
     private final boolean isUserAdmin = UserLogged.userLogged.getUserType().equals(UserType.ADMIN);
@@ -128,6 +131,12 @@ public class ProductScreen extends Container {
                 try {
                     if (indexSelectedItem >= 0 && indexSelectedItem < productsList.size()) {
                         Product product = productsList.get(indexSelectedItem);
+                        for (ItemOrder itemOrder : itemOrderController.getItemOrders()) {
+                            if (itemOrder.getProduct().getId() == product.getId()) {
+                                MessageBoxVariables.alreadyExistsAOrderWithThisProduct();
+                                return;
+                            }
+                        }
                         productController.deleteProduct(product.getId());
                         listContainer.remove(listContainer.getContainer(indexSelectedItem));
                         MainWindow.getMainWindow().swap(new ProductScreen());

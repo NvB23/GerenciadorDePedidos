@@ -4,6 +4,7 @@ import br.com.sovis.controller.ProductController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Product;
 import br.com.sovis.view.partials.product.ContentFieldProduct;
+import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
@@ -92,7 +93,7 @@ public class AddProductScreen extends Container {
         String price = contentFieldProduto.getPriceEdit();
 
         if (name.isEmpty() || description.isEmpty() || price.isEmpty()) {
-            new MessageBox("Erro!", "Preencha todos os campos.").popup();
+            MessageBoxVariables.fieldsEmpty();
             return;
         }
         Product product = new Product(

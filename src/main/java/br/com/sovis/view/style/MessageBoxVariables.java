@@ -38,4 +38,24 @@ public class MessageBoxVariables {
     public static void itemWithQuantityOrProductEmpty () {
         new MessageBox("Item Sem Quantidade ou Produto!", "Item sem quantidade válida ou produto selecionado.").popup();
     }
+
+    public static void fieldsEmpty () {
+        new MessageBox("Erro!", "Preencha todos os campos.").popup();
+    }
+
+    public static void invalidEmail() {
+        new MessageBox("Erro!", "Email inválido.").popup();
+    }
+
+    public static void invalidPhone() {
+        new MessageBox("Erro!", "Telefone inválido.").popup();
+    }
+
+    public static void alreadyExistsAOrderWithThisProduct() {
+        new MessageBox("Erro ao Deletar!", "Existe pedido(s) com esse produto.").popup();
+    }
+
+    public static void alreadyExistsAOrderWithThisClient() {
+        new MessageBox("Erro ao Deletar!", "Existe pedido(s) com esse cliente.").popup();
+    }
 }

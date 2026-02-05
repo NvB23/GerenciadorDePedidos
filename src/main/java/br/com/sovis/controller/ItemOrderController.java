@@ -12,4 +12,8 @@ public class ItemOrderController {
     public ArrayList<ItemOrder> getItemOrdersById(Long idOrder) throws SQLException {
         return itemOrderDAO.getItemOderByIdOrder(String.valueOf(idOrder));
     }
+
+    public ArrayList<ItemOrder> getItemOrders() throws SQLException {
+        return itemOrderDAO.getItemOrders();
+    }
 }

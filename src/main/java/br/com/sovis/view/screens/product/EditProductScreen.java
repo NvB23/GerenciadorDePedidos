@@ -3,6 +3,7 @@ package br.com.sovis.view.screens.product;
 import br.com.sovis.controller.ProductController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Product;
+import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
@@ -105,9 +106,17 @@ public class EditProductScreen extends Container {
     }
 
     private void editClient() throws SQLException {
+        String name = nameEdit.getText();
+        String description = descriptionEdit.getText();
+        String price = priceEdit.getText();
+
+        if (name.isEmpty() || description.isEmpty() || price.isEmpty()) {
+            MessageBoxVariables.fieldsEmpty();
+            return;
+        }
         Product product = new Product(
-                nameEdit.getText(),
-                descriptionEdit.getText(),
+                name,
+                description,
                 Double.parseDouble(priceEdit.getText()));
         productController.updateProduct(produtoEdit.getId(), product);
         MainWindow.getMainWindow().swap(new ProductScreen());

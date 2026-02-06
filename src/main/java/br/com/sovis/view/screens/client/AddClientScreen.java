@@ -108,6 +108,11 @@ public class AddClientScreen extends Container {
             }
         }
 
+        if (phone.length() != 13) {
+            MessageBoxVariables.invalidPhone();
+            return;
+        }
+
         Client client = new Client(
                 name,
                 email,

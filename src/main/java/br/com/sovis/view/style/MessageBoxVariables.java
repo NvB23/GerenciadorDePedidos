@@ -58,4 +58,12 @@ public class MessageBoxVariables {
     public static void alreadyExistsAOrderWithThisClient() {
         new MessageBox("Erro ao Deletar!", "Existe pedido(s) com esse cliente.").popup();
     }
+
+    public static void productNotCanBeFree() {
+        new MessageBox("Preço Inválido!", "O produto não pode ser gratuito.").popup();
+    }
+
+    public static void invalidPrice() {
+        new MessageBox("Preço Inválido!", "Insira um preço válido.").popup();
+    }
 }

@@ -59,11 +59,6 @@ public class LoginScreen extends Container {
     public void onEvent(Event event) {
         if (event.type == ControlEvent.PRESSED) {
             if (event.target == enterButton) {
-                /*try {
-                    MainWindow.getMainWindow().swap(new HomeScreen());
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }*/
                 try {
                     boolean success = Authentication.login(emailEdit.getValue(), passwordEdit.getValue());
                     if (emailEdit.getText().isEmpty() || passwordEdit.getText().isEmpty()) {

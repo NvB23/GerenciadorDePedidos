@@ -96,6 +96,17 @@ public class AddProductScreen extends Container {
             MessageBoxVariables.fieldsEmpty();
             return;
         }
+
+        if (Double.parseDouble(price) == 0) {
+            MessageBoxVariables.productNotCanBeFree();
+            return;
+        }
+
+        if (Double.parseDouble(price) < 0) {
+            MessageBoxVariables.invalidPrice();
+            return;
+        }
+
         Product product = new Product(
                 name,
                 description,

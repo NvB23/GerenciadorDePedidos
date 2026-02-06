@@ -37,11 +37,19 @@ public class EditOrderScreen extends Container {
     private ListContainer listContainer;
     private final ArrayList<ItemOrderTile> items = new ArrayList<>();
     private ItemOrderTile itemOrderTile;
+    private boolean isChecked;
 
     private final int APP_ID_SAVE_BUTTON = 0;
     private final int APP_ID_BACK_BUTTON = 999;
 
     public EditOrderScreen(Container toContainer, Long idOrderToEdit) throws SQLException {
+        this.toContainer = toContainer;
+        this.order = orderController.getOrdersById(idOrderToEdit);
+        setRect(0, 0, FILL, FILL);
+    }
+
+    public EditOrderScreen(Container toContainer, Long idOrderToEdit, boolean isChecked) throws SQLException {
+        this.isChecked = isChecked;
         this.toContainer = toContainer;
         this.order = orderController.getOrdersById(idOrderToEdit);
         setRect(0, 0, FILL, FILL);
@@ -259,7 +267,8 @@ public class EditOrderScreen extends Container {
         order.setClient(client);
         orderController.updateOrder(order.getId(), order, newItems);
         if (toContainer instanceof FilterScreen) {
-            MainWindow.getMainWindow().swap(new FilterScreen(clients.get(clientsComboBox.getSelectedIndex())));
+            MainWindow.getMainWindow().swap(new FilterScreen(clients.get(clientsComboBox.getSelectedIndex()
+            ), isChecked));
         } else {
             MainWindow.getMainWindow().swap(new HomeScreen());
         }

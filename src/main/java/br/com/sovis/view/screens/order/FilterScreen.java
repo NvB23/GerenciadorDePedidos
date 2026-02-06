@@ -8,10 +8,7 @@ import br.com.sovis.model.Order;
 import br.com.sovis.model.UserLogged;
 import br.com.sovis.model.enums.OrderStatus;
 import br.com.sovis.model.enums.UserType;
-import br.com.sovis.view.partials.order.ItemOrderTile;
 import br.com.sovis.view.partials.order.OrderTile;
-import br.com.sovis.view.screens.client.ClientScreen;
-import br.com.sovis.view.screens.product.ProductScreen;
 import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
@@ -32,6 +29,7 @@ public class FilterScreen extends Container {
     private final ArrayList<Client> clients = clientController.getClients();
     private final OrderController orderController = new OrderController();
     private ListContainer listContainer = new ListContainer();
+    private final Check check = new Check("Incluir de todos os usuários");
 
     private ArrayList<Order> resultsOrder;
 
@@ -41,6 +39,7 @@ public class FilterScreen extends Container {
 
     private boolean showNoSearchLabel = true;
     private boolean enabledButtons = false;
+    private boolean isChecked = false;
 
     private final int APP_ID_DELETE_BUTTON = 1;
     private final int APP_ID_EDIT_BUTTON = 2;
@@ -49,14 +48,16 @@ public class FilterScreen extends Container {
     public FilterScreen() throws SQLException {
     }
 
-    public FilterScreen(Client client) throws SQLException {
+    public FilterScreen(Client client, boolean isChecked) throws SQLException {
         this.client = client;
+
+        this.isChecked = isChecked;
 
         showNoSearchLabel = false;
         enabledButtons = true;
 
         listContainer = new ListContainer();
-        listContainer.setRect( LEFT, BOTTOM, FILL, PARENTSIZE + 62);
+        listContainer.setRect( LEFT, BOTTOM, FILL, PARENTSIZE + 57);
         add(listContainer);
 
         if (UserLogged.userLogged.getUserType().equals(UserType.ADMIN)) {
@@ -88,7 +89,7 @@ public class FilterScreen extends Container {
             Button backButton = new Button(new Image("back-arrow.png").getScaledInstance(20, 20));
             backButton.setBackColor(Variables.PRIMARY_COLOR);
             backButton.appId = 999;
-            tabBar.add(backButton, LEFT, TOP);
+            tabBar.add(backButton, LEFT, TOP, PARENTSIZE + 13, PREFERRED);
             backButton.addPressListener(new PressListener() {
                 @Override
                 public void controlPressed(ControlEvent controlEvent) {
@@ -103,9 +104,9 @@ public class FilterScreen extends Container {
             throw new ButtonException(e);
         }
 
-        Label titleLabel = new Label("Filtrar Pedidos Por Cliente");
+        Label titleLabel = new Label("Filtrar Últimos Pedidos Por Cliente");
         titleLabel.setForeColor(Color.WHITE);
-        tabBar.add(titleLabel,  RIGHT - 8, CENTER);
+        tabBar.add(titleLabel,  RIGHT - 3, CENTER);
 
         add(tabBar);
 
@@ -122,6 +123,11 @@ public class FilterScreen extends Container {
         clientsComboBox.setForeColor(Variables.PRIMARY_COLOR);
 
         add(clientsComboBox, LEFT + 12, AFTER + 5, PARENTSIZE + 80, PREFERRED);
+
+        check.setChecked(isChecked);
+        check.setForeColor(Variables.PRIMARY_COLOR);
+        check.setVisible(UserLogged.userLogged.getUserType().equals(UserType.COMUM));
+        add(check, SAME, AFTER + 7, PARENTSIZE + 90, PREFERRED);
 
         if (client != null) clientsComboBox.setValue(client.getId() + " " + client.getName());
 
@@ -170,16 +176,27 @@ public class FilterScreen extends Container {
                 public void controlPressed(ControlEvent controlEvent) {
                     remove(noSearchLabel);
                     remove(noResultsLabel);
+
+                    if (check.isChecked()) {
+                        deleteButton.setEnabled(false);
+                        editButton.setEnabled(false);
+                        closeButton.setEnabled(false);
+                    } else {
+                        deleteButton.setEnabled(true);
+                        editButton.setEnabled(true);
+                        closeButton.setEnabled(true);
+                    }
+
                     int clientSelected = clientsComboBox.getSelectedIndex();
                     if (clientSelected >= 0 && clientSelected < clients.size()) {
                         remove(listContainer);
                         listContainer = new ListContainer();
-                        add(listContainer, LEFT, BOTTOM, FILL, PARENTSIZE + 62);
+                        add(listContainer, LEFT, BOTTOM, FILL, PARENTSIZE + 57);
 
                         Client client = clients.get(clientSelected);
 
                         try {
-                            if (UserLogged.userLogged.getUserType().equals(UserType.ADMIN)) {
+                            if (UserLogged.userLogged.getUserType().equals(UserType.ADMIN) || check.isChecked()) {
                                 resultsOrder = orderController.getOrdersByIdClient(client.getId());
                             } else {
                                 resultsOrder = orderController.getOrdersOfUserByIdClient(client.getId(), UserLogged.userLogged.getId());
@@ -200,9 +217,6 @@ public class FilterScreen extends Container {
 
                                     listContainer.addContainer(orderTile);
                                 }
-                                deleteButton.setEnabled(true);
-                                editButton.setEnabled(true);
-                                closeButton.setEnabled(true);
                             }
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
@@ -226,7 +240,7 @@ public class FilterScreen extends Container {
                         Order order = resultsOrder.get(indexSelectedItem);
                         orderController.deleteOrder(order.getId());
                         listContainer.remove(listContainer.getContainer(indexSelectedItem));
-                        MainWindow.getMainWindow().swap(new FilterScreen(order.getClient()));
+                        MainWindow.getMainWindow().swap(new FilterScreen(order.getClient(), check.isChecked()));
                     } else {
                         MessageBoxVariables.notSelectedItem();
                     }
@@ -242,7 +256,11 @@ public class FilterScreen extends Container {
                         Order order = resultsOrder.get(indexSelectedItem);
                         if (order.getStatusPedido().equals(OrderStatus.FECHADO))
                             MessageBoxVariables.orderLocked();
-                        else MainWindow.getMainWindow().swap(new EditOrderScreen(new FilterScreen(order.getClient()), order.getId()));
+                        else MainWindow.getMainWindow().swap(new EditOrderScreen(
+                                new FilterScreen(order.getClient(), check.isChecked()),
+                                order.getId(),
+                                check.isChecked()
+                                ));
                     } else {
                         MessageBoxVariables.notSelectedItem();
                     }
@@ -258,7 +276,7 @@ public class FilterScreen extends Container {
                     if (indexSelectedItem >= 0 && indexSelectedItem < resultsOrder.size()) {
                         Order order = resultsOrder.get(indexSelectedItem);
                         orderController.updateOrderStatus(order.getId(), OrderStatus.FECHADO);
-                        MainWindow.getMainWindow().swap(new FilterScreen(order.getClient()));
+                        MainWindow.getMainWindow().swap(new FilterScreen(order.getClient(), check.isChecked()));
                     } else {
                         MessageBoxVariables.notSelectedItem();
                     }

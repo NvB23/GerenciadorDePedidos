@@ -23,7 +23,6 @@ import java.util.ArrayList;
 
 public class ContentFieldOrder extends Container {
     private final ClientController clientController = new ClientController();
-    private final ProductController productController = new ProductController();
 
     private ComboBox clientsComboBox;
 
@@ -31,7 +30,7 @@ public class ContentFieldOrder extends Container {
 
     private final ArrayList<Client> clients = clientController.getClients();
 
-    private ArrayList<Product> products;
+    private final ArrayList<Product> products;
 
     private ListContainer listContainer;
     private final ArrayList<ItemOrderTile> items = new ArrayList<>();
@@ -40,7 +39,18 @@ public class ContentFieldOrder extends Container {
 
 
 
-    public ContentFieldOrder() throws SQLException {}
+    public ContentFieldOrder() throws SQLException {
+        try {
+            ProductController productController = new ProductController();
+            if (UserLogged.userLogged.getUserType().equals(UserType.ADMIN)) {
+                products = productController.getAllProducts();
+            } else {
+                products = productController.getProductsOfUser(UserLogged.userLogged.getId());
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public void initUI() {
@@ -82,17 +92,18 @@ public class ContentFieldOrder extends Container {
             addButton.addPressListener(new PressListener() {
                 @Override
                 public void controlPressed(ControlEvent controlEvent) {
-                    try {
-                        if (UserLogged.userLogged.getUserType().equals(UserType.ADMIN)) {
-                            products = productController.getAllProducts();
-                        } else {
-                            products = productController.getProductsOfUser(UserLogged.userLogged.getId());
-                        }
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
+                    ArrayList<Product> productsAvailable = new ArrayList<>(products);
 
-                    itemOrderTile = new ItemOrderTile(products, layout);
+                    for (ItemOrderTile itemOrderTile : items) {
+                        if (itemOrderTile.getProduct() == null) {
+                            continue;
+                        }
+
+                        Long idProduct = itemOrderTile.getProduct().getId();
+
+                        productsAvailable.removeIf(product -> product.getId() == idProduct);
+                    }
+                    itemOrderTile = new ItemOrderTile(productsAvailable, layout);
                     primaryAdditionItemOrderTile = true;
                     items.add(itemOrderTile);
                     listContainer.addContainer(itemOrderTile);

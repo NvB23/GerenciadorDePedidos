@@ -11,7 +11,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ClientDAO {
-    public void createClient(String name, String email, String phone, String dateRegister) throws SQLException {
+    public void createClient(
+            String name,
+            String email,
+            String phone,
+            String dateRegister,
+            ArrayList<Long> usersForAssociate) throws SQLException {
         Connection connection = Database.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "INSERT INTO cliente(nome, email, telefone, dataCadastro) VALUES(?, ?, ?, ?);");
@@ -22,7 +27,22 @@ public class ClientDAO {
         preparedStatement.setString(4, dateRegister);
 
         preparedStatement.executeUpdate();
+
+        PreparedStatement preparedStatementId = connection.prepareStatement("SELECT MAX(id) FROM cliente;");
+        ResultSet resultSet = preparedStatementId.executeQuery();
+        Long idClient = null;
+        if (resultSet.next()) {
+            idClient = resultSet.getLong(1);
+        }
+
+        UserClientDAO userClientDAO = new UserClientDAO();
+
+        for (Long idUser : usersForAssociate) {
+            userClientDAO.createUserClient(String.valueOf(idClient), String.valueOf(idUser));
+        }
+
         preparedStatement.close();
+        preparedStatementId.close();
         connection.close();
     }
 
@@ -72,6 +92,29 @@ public class ClientDAO {
 
         resultSet.close();
         statement.close();
+        connection.close();
+
+        return clients;
+    }
+
+    public ArrayList<Client> getClientsOfUser(String idUser) throws SQLException {
+        ArrayList<Client> clients = new ArrayList<>();
+        Connection connection = Database.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT * FROM usuario_cliente WHERE idUsuario = ?;");
+        preparedStatement.setString(1, idUser);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        while (resultSet.next()) {
+            String id = resultSet.getString("idCliente");
+
+            Client client = getClient(id);
+
+            clients.add(client);
+        }
+
+        resultSet.close();
+        preparedStatement.close();
         connection.close();
 
         return clients;

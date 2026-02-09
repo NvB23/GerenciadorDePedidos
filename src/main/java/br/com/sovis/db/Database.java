@@ -99,6 +99,16 @@ public class Database {
                     "FOREIGN KEY(idProduto) REFERENCES produto(id)" +
                     ");"
             );
+            statement.execute("CREATE TABLE IF NOT EXISTS usuario_cliente (" +
+                    "id INTEGER NOT NULL," +
+                    "idUsuario INTEGER NOT NULL," +
+                    "idCliente INTEGER NOT NULL," +
+
+                    "PRIMARY KEY(id AUTOINCREMENT)," +
+                    "FOREIGN KEY(idUsuario) REFERENCES usuario(id)," +
+                    "FOREIGN KEY(idCliente) REFERENCES cliente(id)" +
+                    ");"
+            );
 
             preparedStatement.close();
             statement.close();

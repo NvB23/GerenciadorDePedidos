@@ -26,7 +26,7 @@ public class AddClientScreen extends Container {
     private final int APP_ID_SAVE_BUTTON = 0;
 
 
-    public AddClientScreen(Container toContainer) {
+    public AddClientScreen(Container toContainer) throws SQLException {
         this.toContainer = toContainer;
         setRect(0, 0, FILL, FILL);
     }
@@ -61,7 +61,7 @@ public class AddClientScreen extends Container {
 
         add(tabBar);
 
-        add(contentFieldCliente, 0, TOP + 80, FILL, FILL);
+        add(contentFieldCliente, 0, TOP + 55, FILL, FILL);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class AddClientScreen extends Container {
                 email,
                 phone
         );
-        clienteController.createClient(client);
+        clienteController.createClient(client, contentFieldCliente.getUsersForAssociate());
         MainWindow.getMainWindow().swap(new ClientScreen());
     }
 }

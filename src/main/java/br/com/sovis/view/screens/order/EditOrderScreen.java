@@ -32,7 +32,7 @@ public class EditOrderScreen extends Container {
     private final OrderController orderController = new OrderController();
     private final ItemOrderController itemOrderController = new ItemOrderController();
 
-    private final ArrayList<Client> clients = clientController.getClients();
+    private final ArrayList<Client> clients;
     private ArrayList<Product> products;
     private ListContainer listContainer;
     private final ArrayList<ItemOrderTile> items = new ArrayList<>();
@@ -43,12 +43,22 @@ public class EditOrderScreen extends Container {
     private final int APP_ID_BACK_BUTTON = 999;
 
     public EditOrderScreen(Container toContainer, Long idOrderToEdit) throws SQLException {
+        if (UserLogged.userLogged.getUserType().equals(UserType.ADMIN)) {
+            clients = clientController.getClients();
+        } else {
+            clients = clientController.getClientsOfUser(UserLogged.userLogged.getId());
+        }
         this.toContainer = toContainer;
         this.order = orderController.getOrdersById(idOrderToEdit);
         setRect(0, 0, FILL, FILL);
     }
 
     public EditOrderScreen(Container toContainer, Long idOrderToEdit, boolean isChecked) throws SQLException {
+        if (UserLogged.userLogged.getUserType().equals(UserType.ADMIN)) {
+            clients = clientController.getClients();
+        } else {
+            clients = clientController.getClientsOfUser(UserLogged.userLogged.getId());
+        }
         this.isChecked = isChecked;
         this.toContainer = toContainer;
         this.order = orderController.getOrdersById(idOrderToEdit);

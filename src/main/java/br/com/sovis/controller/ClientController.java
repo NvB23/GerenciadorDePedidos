@@ -10,12 +10,14 @@ public class ClientController {
 
     private final ClientDAO clientDAO = new ClientDAO();
 
-    public void createClient(Client client) throws SQLException {
+    public void createClient(Client client, ArrayList<Long> usersForAssociated) throws SQLException {
         clientDAO.createClient(
                 client.getName(),
                 client.getEmail(),
                 client.getPhone(),
-                client.getDateRegister());
+                client.getDateRegister(),
+                usersForAssociated
+            );
     }
 
     public void updateClient(Long id, Client clientModify) throws SQLException {
@@ -33,6 +35,10 @@ public class ClientController {
 
     public ArrayList<Client> getClients() throws SQLException {
         return clientDAO.getClients();
+    }
+
+    public ArrayList<Client> getClientsOfUser(Long idUser) throws SQLException {
+        return clientDAO.getClientsOfUser(String.valueOf(idUser));
     }
 
     public Client getClientById(Long id) throws SQLException {

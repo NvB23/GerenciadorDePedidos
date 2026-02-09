@@ -86,6 +86,29 @@ public class UserDAO {
         return usuarios;
     }
 
+    public ArrayList<User> getCommonUsers() throws SQLException {
+        ArrayList<User> usuarios = new ArrayList<>();
+        Connection connection = Database.getConnection();
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(
+                "SELECT * FROM usuario WHERE tipo = 'COMUM';");
+
+        while (resultSet.next()) {
+            String id = resultSet.getString("id");
+            String email = resultSet.getString("email");
+            String password = resultSet.getString("senha");
+            String userType = resultSet.getString("tipo");
+            User user = new User(Long.parseLong(id), email, password, UserType.valueOf(userType));
+            usuarios.add(user);
+        }
+
+        resultSet.close();
+        statement.close();
+        connection.close();
+
+        return usuarios;
+    }
+
     public User getUserById(String idPassed) throws SQLException {
         Connection connection = Database.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM usuario WHERE id = ?;");

@@ -5,6 +5,8 @@ import br.com.sovis.controller.OrderController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Client;
 import br.com.sovis.model.Order;
+import br.com.sovis.model.UserLogged;
+import br.com.sovis.model.enums.UserType;
 import br.com.sovis.view.partials.client.ClientTile;
 import br.com.sovis.view.partials.common.MainButton;
 import br.com.sovis.view.screens.order.HomeScreen;
@@ -27,6 +29,7 @@ public class ClientScreen extends Container {
     private final OrderController orderController = new OrderController();
     private ListContainer listContainer;
     private ArrayList<Client> clientList;
+    private final boolean isUserAdmin = UserLogged.userLogged.getUserType().equals(UserType.ADMIN);
 
     private final int APP_ID_BACK_BUTTON = 999;
     private final int APP_ID_DELETE_BUTTON = 4;
@@ -53,7 +56,11 @@ public class ClientScreen extends Container {
 
         add(tabBar);
 
-        add(new MainButton("client.png", "Adicionar Cliente", new AddClientScreen(this)), CENTER, AFTER + 70, PARENTSIZE + 90, PARENTSIZE + 10);
+        try {
+            add(new MainButton("client.png", "Adicionar Cliente", new AddClientScreen(this)), CENTER, AFTER + 70, PARENTSIZE + 90, PARENTSIZE + 10);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         Label clientTitle = new Label("Lista de Clientes");
         clientTitle.setFont(Font.getFont(true, 15));
@@ -75,7 +82,11 @@ public class ClientScreen extends Container {
         add(editButton, BEFORE - 10, SAME, PREFERRED - 5, PREFERRED - 5);
 
         try {
-            clientList = clientController.getClients();
+            if (isUserAdmin) {
+                clientList = clientController.getClients();
+            } else {
+                clientList = clientController.getClientsOfUser(UserLogged.userLogged.getId());
+            }
 
             if (clientList.isEmpty()) {
                 Label semClientesLabel = new Label("Sem clientes cadastrados");

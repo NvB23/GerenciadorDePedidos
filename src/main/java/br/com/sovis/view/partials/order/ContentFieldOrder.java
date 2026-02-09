@@ -22,13 +22,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ContentFieldOrder extends Container {
-    private final ClientController clientController = new ClientController();
-
     private ComboBox clientsComboBox;
 
     private ItemOrderTile itemOrderTile;
 
-    private final ArrayList<Client> clients = clientController.getClients();
+    private final ArrayList<Client> clients;
 
     private final ArrayList<Product> products;
 
@@ -39,13 +37,21 @@ public class ContentFieldOrder extends Container {
 
 
 
-    public ContentFieldOrder() throws SQLException {
+    public ContentFieldOrder() {
         try {
             ProductController productController = new ProductController();
+            ClientController clientController = new ClientController();
+
             if (UserLogged.userLogged.getUserType().equals(UserType.ADMIN)) {
                 products = productController.getAllProducts();
             } else {
                 products = productController.getProductsOfUser(UserLogged.userLogged.getId());
+            }
+
+            if (UserLogged.userLogged.getUserType().equals(UserType.ADMIN)) {
+                clients = clientController.getClients();
+            } else {
+                clients = clientController.getClientsOfUser(UserLogged.userLogged.getId());
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

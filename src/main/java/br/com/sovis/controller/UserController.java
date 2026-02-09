@@ -32,6 +32,10 @@ public class UserController {
         return userDAO.getUsers();
     }
 
+    public ArrayList<User> getCommonUsers() throws SQLException {
+        return userDAO.getCommonUsers();
+    }
+
     public User getUserById(Long id) throws SQLException {
         return userDAO.getUserById(String.valueOf(id));
     }

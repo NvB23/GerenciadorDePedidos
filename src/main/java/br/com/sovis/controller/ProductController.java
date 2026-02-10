@@ -9,20 +9,22 @@ import java.util.ArrayList;
 public class ProductController {
     private final ProductDAO productDAO = new ProductDAO();
 
-    public void createProduct(Product product) throws SQLException {
+    public void createProduct(Product product, ArrayList<Long> usersForAssociated) throws SQLException {
         productDAO.createProduct(
                 product.getName(),
                 product.getDescription(),
-                String.valueOf(product.getPrice())
+                String.valueOf(product.getPrice()),
+                usersForAssociated
         );
     }
 
-    public void updateProduct(Long id, Product productModify) throws SQLException {
+    public void updateProduct(Long id, Product productModify, ArrayList<Long> usersForAssociatedEdit) throws SQLException {
         productDAO.updateProduct(
                 String.valueOf(id),
                 productModify.getName(),
                 productModify.getDescription(),
-                String.valueOf(productModify.getPrice())
+                String.valueOf(productModify.getPrice()),
+                usersForAssociatedEdit
         );
     }
 

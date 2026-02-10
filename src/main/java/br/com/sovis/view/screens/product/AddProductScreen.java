@@ -8,7 +8,6 @@ import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
 import totalcross.ui.*;
-import totalcross.ui.dialog.MessageBox;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.Event;
 import totalcross.ui.gfx.Color;
@@ -25,7 +24,7 @@ public class AddProductScreen extends Container {
     private final int APP_ID_BACK_BUTTON = 999;
     private final int APP_ID_SAVE_BUTTON = 0;
 
-    public AddProductScreen(Container toContainer) {
+    public AddProductScreen(Container toContainer) throws SQLException {
         this.toContainer = toContainer;
         setRect(0, 0, FILL, FILL);
     }
@@ -62,7 +61,7 @@ public class AddProductScreen extends Container {
 
         add(tabBar);
 
-        add(contentFieldProduct, 0, TOP + 80, FILL, FILL);
+        add(contentFieldProduct, 0, TOP + 60, FILL, FILL);
     }
 
     @Override
@@ -112,7 +111,8 @@ public class AddProductScreen extends Container {
                 description,
                 Double.parseDouble(price)
         );
-        productController.createProduct(product);
+
+        productController.createProduct(product, contentFieldProduct.getUsersForAssociate());
         MainWindow.getMainWindow().swap(new ProductScreen());
     }
 }

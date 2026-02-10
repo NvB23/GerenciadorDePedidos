@@ -3,6 +3,7 @@ package br.com.sovis.view.partials.client;
 
 import br.com.sovis.controller.UserController;
 import br.com.sovis.model.User;
+import br.com.sovis.view.partials.common.AssociatedTile;
 import br.com.sovis.view.style.Variables;
 import totalcross.ui.Container;
 import totalcross.ui.Edit;
@@ -18,7 +19,7 @@ public class ContentFieldClient extends Container {
     private Edit emailEdit;
     private Edit phoneEdit;
 
-    private final ArrayList<AssociatedClientTile> associatedClientTileArrayList = new ArrayList<>();
+    private final ArrayList<AssociatedTile> associatedTileArrayList = new ArrayList<>();
     private final ArrayList<User> users;
 
     public ContentFieldClient() throws SQLException {
@@ -50,7 +51,7 @@ public class ContentFieldClient extends Container {
         phoneEdit.setMode(Edit.NORMAL, true);
         add(phoneEdit, CENTER, AFTER + 5, PARENTSIZE + 90, PREFERRED - 20);
 
-        Label associatedLabel = new Label("Clientes Associados");
+        Label associatedLabel = new Label("Usuários Associados");
         associatedLabel.setForeColor(Variables.SECOND_COLOR);
         add(associatedLabel, PARENTSIZE + 50, AFTER + 20 , PARENTSIZE + 90, PREFERRED);
 
@@ -62,9 +63,9 @@ public class ContentFieldClient extends Container {
         add(listContainer);
 
         for (User user : users) {
-            AssociatedClientTile associatedClientTile = new AssociatedClientTile(layout, user);
-            listContainer.addContainer(associatedClientTile);
-            associatedClientTileArrayList.add(associatedClientTile);
+            AssociatedTile associatedTile = new AssociatedTile(layout, user);
+            listContainer.addContainer(associatedTile);
+            associatedTileArrayList.add(associatedTile);
         }
     }
 
@@ -83,9 +84,9 @@ public class ContentFieldClient extends Container {
     public ArrayList<Long> getUsersForAssociate() {
         final ArrayList<Long> usersForAssociate = new ArrayList<>();
 
-        for (AssociatedClientTile associatedClientTile : associatedClientTileArrayList) {
-            if (associatedClientTile.getUserAssociated() != null) {
-                usersForAssociate.add(associatedClientTile.getUserAssociated());
+        for (AssociatedTile associatedTile : associatedTileArrayList) {
+            if (associatedTile.getUserAssociated() != null) {
+                usersForAssociate.add(associatedTile.getUserAssociated());
             }
         }
 

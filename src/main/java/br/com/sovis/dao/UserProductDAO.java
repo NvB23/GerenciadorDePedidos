@@ -1,39 +1,35 @@
 package br.com.sovis.dao;
 
 import br.com.sovis.db.Database;
-import br.com.sovis.model.ItemOrder;
-import br.com.sovis.model.Order;
-import br.com.sovis.model.Product;
 import totalcross.sql.Connection;
 import totalcross.sql.PreparedStatement;
 import totalcross.sql.ResultSet;
-import totalcross.sql.Statement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class UserClientDAO {
-    public void createUserClient(
+public class UserProductDAO {
+    public void createUserProduct(
             String idUser,
-            String idClient
+            String idProduct
     ) throws SQLException {
 
         Connection connection = Database.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT INTO usuario_cliente(idUsuario, idCliente) VALUES(?, ?);");
+                "INSERT INTO usuario_produto(idUsuario, idProduto) VALUES(?, ?);");
 
         preparedStatement.setString(1, idUser);
-        preparedStatement.setString(2, idClient);
+        preparedStatement.setString(2, idProduct);
 
         preparedStatement.executeUpdate();
         preparedStatement.close();
     }
 
 
-    public void deleteUserClient(String id) throws SQLException {
+    public void deleteUserProduct(String id) throws SQLException {
         Connection connection = Database.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                "DELETE FROM usuario_cliente WHERE idCliente = ?;");
+                "DELETE FROM usuario_produto WHERE idProduto = ?;");
 
         preparedStatement.setString(1, id);
 
@@ -41,22 +37,22 @@ public class UserClientDAO {
         preparedStatement.close();
     }
 
-    public ArrayList<Long> getUserClientByIdClient(String idPassed) throws SQLException {
-        ArrayList<Long> idsClients = new ArrayList<>();
+    public ArrayList<Long> getUserProductByIdProduct(String idPassed) throws SQLException {
+        ArrayList<Long> idsProducts = new ArrayList<>();
         Connection connection = Database.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM usuario_cliente WHERE idCliente = ?;");
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM usuario_produto WHERE idProduto = ?;");
         preparedStatement.setString(1, idPassed);
         ResultSet resultSet = preparedStatement.executeQuery();
 
         while (resultSet.next()) {
-            String idClient = resultSet.getString("idUsuario");
+            String idProduto = resultSet.getString("idUsuario");
 
-            idsClients.add(Long.parseLong(idClient));
+            idsProducts.add(Long.parseLong(idProduto));
         }
 
         resultSet.close();
         preparedStatement.close();
 
-        return idsClients;
+        return idsProducts;
     }
 }

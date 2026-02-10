@@ -56,12 +56,16 @@ public class ProductScreen extends Container {
 
         add(tabBar);
 
-        add(new MainButton(
-                "product.png",
-                "Adicionar Produto",
-                new AddProductScreen(this),
-                isUserAdmin
-        ), CENTER, AFTER + 70, PARENTSIZE + 90, PARENTSIZE + 10);
+        try {
+            add(new MainButton(
+                    "product.png",
+                    "Adicionar Produto",
+                    new AddProductScreen(this),
+                    isUserAdmin
+            ), CENTER, AFTER + 70, PARENTSIZE + 90, PARENTSIZE + 10);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         Label productsTitle = new Label("Lista de Produtos");
         productsTitle.setFont(Font.getFont(true, 15));

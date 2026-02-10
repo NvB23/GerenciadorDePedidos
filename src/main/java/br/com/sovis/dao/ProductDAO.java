@@ -11,7 +11,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ProductDAO {
-    public void createProduct(String name, String description, String price) throws SQLException {
+    private final UserProductDAO userProductDAO = new UserProductDAO();
+
+    public void createProduct(
+            String name,
+            String description,
+            String price,
+            ArrayList<Long> usersForAssociate) throws SQLException {
         Connection connection = Database.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "INSERT INTO produto(nome, descricao, preco) VALUES(?, ?, ?);");
@@ -21,11 +27,31 @@ public class ProductDAO {
         preparedStatement.setString(3, price);
 
         preparedStatement.executeUpdate();
+
+        PreparedStatement preparedStatementId = connection.prepareStatement("SELECT MAX(id) FROM produto;");
+        ResultSet resultSet = preparedStatementId.executeQuery();
+
+        Long idProduct = null;
+        if (resultSet.next()) {
+            idProduct = resultSet.getLong(1);
+        }
+
+        for (Long idUser : usersForAssociate) {
+            userProductDAO.createUserProduct(String.valueOf(idUser), String.valueOf(idProduct));
+        }
+
+        preparedStatementId.close();
         preparedStatement.close();
         connection.close();
     }
 
-    public void updateProduct(String id, String name, String description, String price) throws SQLException {
+    public void updateProduct(
+            String id,
+            String name,
+            String description,
+            String price,
+            ArrayList<Long> userForAssociatedEdit
+    ) throws SQLException {
         Connection connection = Database.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "UPDATE produto SET nome = ?, descricao = ?, preco = ? WHERE id = ?;");
@@ -36,6 +62,13 @@ public class ProductDAO {
         preparedStatement.setString(4, id);
 
         preparedStatement.executeUpdate();
+
+        userProductDAO.deleteUserProduct(id);
+
+        for (Long idForAssociate : userForAssociatedEdit) {
+            userProductDAO.createUserProduct(String.valueOf(idForAssociate), String.valueOf(id));
+        }
+
         preparedStatement.close();
         connection.close();
     }
@@ -48,6 +81,9 @@ public class ProductDAO {
         preparedStatement.setString(1, id);
 
         preparedStatement.executeUpdate();
+
+        userProductDAO.deleteUserProduct(id);
+
         preparedStatement.close();
         connection.close();
     }

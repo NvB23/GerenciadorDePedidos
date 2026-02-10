@@ -65,9 +65,14 @@ public class ClientDAO {
         preparedStatement.setString(4, dateRegister);
         preparedStatement.setString(5, id);
 
-        
-
         preparedStatement.executeUpdate();
+
+        userClientDAO.deleteUserClient(id);
+
+        for (Long idForAssociate : userForAssociatedEdit) {
+            userClientDAO.createUserClient(String.valueOf(idForAssociate), String.valueOf(id));
+        }
+
         preparedStatement.close();
         connection.close();
     }
@@ -80,6 +85,9 @@ public class ClientDAO {
         preparedStatement.setString(1, id);
 
         preparedStatement.executeUpdate();
+
+        userClientDAO.deleteUserClient(id);
+
         preparedStatement.close();
         connection.close();
     }

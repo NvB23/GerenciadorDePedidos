@@ -1,11 +1,12 @@
 package br.com.sovis.view.screens.client;
 
 import br.com.sovis.controller.ClientController;
+import br.com.sovis.controller.UserClientController;
 import br.com.sovis.controller.UserController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Client;
 import br.com.sovis.model.User;
-import br.com.sovis.view.partials.client.AssociatedClientTile;
+import br.com.sovis.view.partials.common.AssociatedTile;
 import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
@@ -26,8 +27,9 @@ public class EditClientScreen extends Container {
     private final ClientController clientController = new ClientController();
     private Edit nameEdit, emailEdit, phoneEdit;
 
-    private final ArrayList<AssociatedClientTile> associatedClientTileArrayList = new ArrayList<>();
+    private final ArrayList<AssociatedTile> associatedTileArrayList = new ArrayList<>();
     private final ArrayList<User> users;
+    private final ArrayList<Long> usersAssociated;
 
     private final int APP_ID_SAVE_BUTTON = 5;
     private final int APP_ID_BACK_BUTTON = 999;
@@ -37,6 +39,8 @@ public class EditClientScreen extends Container {
         this.clientEdit = clientController.getClientById(idToEdit);
         UserController userController = new UserController();
         users = userController.getCommonUsers();
+        UserClientController userClientController = new UserClientController();
+        usersAssociated = userClientController.getUserClientByIdClient(idToEdit);
         setRect(0, 0, FILL, FILL);
     }
 
@@ -110,9 +114,14 @@ public class EditClientScreen extends Container {
         add(listContainer);
 
         for (User user : users) {
-            AssociatedClientTile associatedClientTile = new AssociatedClientTile(layout, user);
-            listContainer.addContainer(associatedClientTile);
-            associatedClientTileArrayList.add(associatedClientTile);
+            AssociatedTile associatedTile;
+            if (usersAssociated.contains(user.getId())) {
+                associatedTile = new AssociatedTile(layout, user, true);
+            } else {
+                associatedTile = new AssociatedTile(layout, user);
+            }
+            listContainer.addContainer(associatedTile);
+            associatedTileArrayList.add(associatedTile);
         }
     }
 
@@ -159,9 +168,9 @@ public class EditClientScreen extends Container {
 
         ArrayList<Long> usersForAssociatedEdit = new ArrayList<>();
 
-        for (AssociatedClientTile associatedClientTile : associatedClientTileArrayList) {
-            if (associatedClientTile.getUserAssociated() != null) {
-                usersForAssociatedEdit.add(associatedClientTile.getUserAssociated());
+        for (AssociatedTile associatedTile : associatedTileArrayList) {
+            if (associatedTile.getUserAssociated() != null) {
+                usersForAssociatedEdit.add(associatedTile.getUserAssociated());
             }
         }
 

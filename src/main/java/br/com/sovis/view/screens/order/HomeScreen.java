@@ -89,8 +89,13 @@ public class HomeScreen extends Container {
 
         add(tabBar);
 
+        Label greetingLabel = new Label("Seja Bem-Vindo " + UserLogged.userLogged.getName());
+        greetingLabel.setForeColor(Variables.SECOND_COLOR);
+        greetingLabel.setFont(Font.getFont(true, 16));
+        add(greetingLabel, CENTER, AFTER + 65, PARENTSIZE + 90, PREFERRED);
+
         try {
-            add(new MainButton("order-car.png", "Adicionar Pedido", new AddOrderScreen(this)), CENTER, AFTER + 70, PARENTSIZE + 90, PARENTSIZE + 10);
+            add(new MainButton("order-car.png", "Adicionar Pedido", new AddOrderScreen(this)), CENTER, AFTER + 10, PARENTSIZE + 90, PARENTSIZE + 10);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

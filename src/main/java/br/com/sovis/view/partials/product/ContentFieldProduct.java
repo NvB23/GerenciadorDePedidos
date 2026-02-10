@@ -58,7 +58,7 @@ public class ContentFieldProduct extends Container {
         ListContainer listContainer = new ListContainer();
         ListContainer.Layout layout = listContainer.getLayout(0, 1);
         layout.setup();
-        listContainer.setRect(CENTER, PARENTSIZE + 82, PARENTSIZE + 90, PARENTSIZE + 60);
+        listContainer.setRect(CENTER, PARENTSIZE + 72, PARENTSIZE + 90, PARENTSIZE + 40);
         listContainer.highlightColor = Color.WHITE;
         add(listContainer);
 

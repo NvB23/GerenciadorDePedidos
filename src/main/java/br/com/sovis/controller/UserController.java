@@ -11,6 +11,7 @@ public class UserController {
 
     public boolean createUser(User user) throws SQLException {
         return userDAO.createUser(
+                user.getName(),
                 user.getEmail(),
                 user.getPassword()
         );
@@ -19,6 +20,7 @@ public class UserController {
     public boolean updateUser(Long id, User userModify) throws SQLException {
         return userDAO.updateUser(
                 String.valueOf(id),
+                userModify.getName(),
                 userModify.getEmail(),
                 userModify.getPassword()
         );

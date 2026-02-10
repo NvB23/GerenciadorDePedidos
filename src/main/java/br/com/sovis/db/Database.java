@@ -20,6 +20,7 @@ public class Database {
 
             statement.execute("CREATE TABLE IF NOT EXISTS usuario (" +
                     "id INTEGER NOT NULL," +
+                    "nome TEXT NOT NULL," +
                     "email TEXT NOT NULL UNIQUE," +
                     "senha TEXT NOT NULL," +
                     "tipo TEXT NOT NULL," +
@@ -29,18 +30,21 @@ public class Database {
             );
 
             ArrayList<User> users = new ArrayList<>();
-            users.add(new User("admin@sovis.com.br", "123", UserType.ADMIN));
-            users.add(new User("naum@sovis.com.br", "123", UserType.COMUM));
-            users.add(new User("kaue@sovis.com.br", "123", UserType.COMUM));
-            users.add(new User("francisco@sovis.com.br", "123", UserType.COMUM));
+            users.add(new User("Administrador", "admin@sovis.com.br", "123", UserType.ADMIN));
+            users.add(new User("Naum", "naum@sovis.com.br", "123", UserType.COMUM));
+            users.add(new User("Kaue", "kaue@sovis.com.br", "123", UserType.COMUM));
+            users.add(new User("Francisco", "francisco@sovis.com.br", "123", UserType.COMUM));
+            users.add(new User("João Carlos de Almeida", "joaoCA@sovis.com.br", "123", UserType.COMUM));
+            users.add(new User("Felipe Siqueira", "felipe@sovis.com.br", "123", UserType.COMUM));
 
             PreparedStatement preparedStatement = sqLiteUtil.con().prepareStatement(
-                    "INSERT OR IGNORE INTO usuario(email, senha, tipo) VALUES(?, ?, ?);");
+                    "INSERT OR IGNORE INTO usuario(nome, email, senha, tipo) VALUES(?, ?, ?, ?);");
 
             for (User user : users) {
-                preparedStatement.setString(1, user.getEmail());
-                preparedStatement.setString(2, user.getPassword());
-                preparedStatement.setString(3, String.valueOf(user.getUserType()));
+                preparedStatement.setString(1, user.getName());
+                preparedStatement.setString(2, user.getEmail());
+                preparedStatement.setString(3, user.getPassword());
+                preparedStatement.setString(4, String.valueOf(user.getUserType()));
                 preparedStatement.executeUpdate();
             }
 

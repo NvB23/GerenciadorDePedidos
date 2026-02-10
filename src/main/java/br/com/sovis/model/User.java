@@ -4,18 +4,21 @@ import br.com.sovis.model.enums.UserType;
 
 public class User {
     private Long id;
+    private final String name;
     private String email;
     private String password;
     private UserType userType;
 
-    public User(Long id, String email, String password, UserType userType) {
+    public User(Long id, String name, String email, String password, UserType userType) {
         this.id = id;
+        this.name = name;
         this.email = email;
         this.password = password;
         this.userType = userType;
     }
 
-    public User(String email, String password, UserType userType) {
+    public User(String name, String email, String password, UserType userType) {
+        this.name = name;
         this.email = email;
         this.password = password;
         this.userType = userType;
@@ -47,5 +50,9 @@ public class User {
 
     public void setUserType(UserType userType) {
         this.userType = userType;
+    }
+
+    public String getName() {
+        return name;
     }
 }

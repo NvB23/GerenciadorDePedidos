@@ -12,13 +12,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class UserDAO {
-    public boolean createUser(String email, String password) throws SQLException {
+    public boolean createUser(String name, String email, String password) throws SQLException {
         Connection connection = Database.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT INTO usuario(email, senha) VALUES(?, ?);");
+                "INSERT INTO usuario(nome, email, senha) VALUES(?, ?, ?);");
 
-        preparedStatement.setString(1, email);
-        preparedStatement.setString(2, password);
+        preparedStatement.setString(1, name);
+        preparedStatement.setString(2, email);
+        preparedStatement.setString(3, password);
 
         int i = preparedStatement.executeUpdate();
         preparedStatement.close();
@@ -29,14 +30,15 @@ public class UserDAO {
         return false;
     }
 
-    public boolean updateUser(String id, String email, String password) throws SQLException {
+    public boolean updateUser(String id, String name, String email, String password) throws SQLException {
         Connection connection = Database.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                "UPDATE usuario SET email = ?, senha = ? WHERE id = ?;");
+                "UPDATE usuario SET name = ?, email = ?, senha = ? WHERE id = ?;");
 
-        preparedStatement.setString(1, email);
-        preparedStatement.setString(2, password);
-        preparedStatement.setString(3, id);
+        preparedStatement.setString(1, name);
+        preparedStatement.setString(2, email);
+        preparedStatement.setString(3, password);
+        preparedStatement.setString(4, id);
 
         int i = preparedStatement.executeUpdate();
         preparedStatement.close();
@@ -72,10 +74,11 @@ public class UserDAO {
 
         while (resultSet.next()) {
             String id = resultSet.getString("id");
+            String name = resultSet.getString("nome");
             String email = resultSet.getString("email");
             String password = resultSet.getString("senha");
             String userType = resultSet.getString("tipo");
-            User user = new User(Long.parseLong(id), email, password, UserType.valueOf(userType));
+            User user = new User(Long.parseLong(id), name, email, password, UserType.valueOf(userType));
             usuarios.add(user);
         }
 
@@ -95,10 +98,11 @@ public class UserDAO {
 
         while (resultSet.next()) {
             String id = resultSet.getString("id");
+            String name = resultSet.getString("nome");
             String email = resultSet.getString("email");
             String password = resultSet.getString("senha");
             String userType = resultSet.getString("tipo");
-            User user = new User(Long.parseLong(id), email, password, UserType.valueOf(userType));
+            User user = new User(Long.parseLong(id), name, email, password, UserType.valueOf(userType));
             usuarios.add(user);
         }
 
@@ -117,10 +121,11 @@ public class UserDAO {
 
         if (resultSet.next()) {
             String id = resultSet.getString("id");
+            String name = resultSet.getString("nome");
             String email = resultSet.getString("email");
             String password = resultSet.getString("senha");
             String userType = resultSet.getString("tipo");
-            return new User(Long.parseLong(id), email, password, UserType.valueOf(userType));
+            return new User(Long.parseLong(id), name, email, password, UserType.valueOf(userType));
         }
 
         resultSet.close();
@@ -141,10 +146,11 @@ public class UserDAO {
 
         if (resultSet.next()) {
             String id = resultSet.getString("id");
+            String name = resultSet.getString("nome");
             String email = resultSet.getString("email");
             String password = resultSet.getString("senha");
             String userType = resultSet.getString("tipo");
-            return new User(Long.parseLong(id), email, password, UserType.valueOf(userType));
+            return new User(Long.parseLong(id), name, email, password, UserType.valueOf(userType));
         }
 
         resultSet.close();

@@ -57,7 +57,11 @@ public class ClientScreen extends Container {
         add(tabBar);
 
         try {
-            add(new MainButton("client.png", "Adicionar Cliente", new AddClientScreen(this)), CENTER, AFTER + 70, PARENTSIZE + 90, PARENTSIZE + 10);
+            add(new MainButton(
+                    "client.png",
+                    "Adicionar Cliente",
+                    new AddClientScreen(this),
+                    isUserAdmin), CENTER, AFTER + 70, PARENTSIZE + 90, PARENTSIZE + 10);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -72,9 +76,11 @@ public class ClientScreen extends Container {
             deleteButton = new Button(new Image("trash.png").getScaledInstance(20,20));
             deleteButton.setBackColor(Variables.PRIMARY_COLOR);
             deleteButton.appId = APP_ID_DELETE_BUTTON;
+            deleteButton.setEnabled(isUserAdmin);
             editButton = new Button(new Image("edit.png").getScaledInstance(20,20));
             editButton.setBackColor(Variables.PRIMARY_COLOR);
             editButton.appId = APP_ID_EDIT_BUTTON;
+            editButton.setEnabled(isUserAdmin);
         } catch (ImageException | IOException e) {
             throw new ButtonException(e);
         }

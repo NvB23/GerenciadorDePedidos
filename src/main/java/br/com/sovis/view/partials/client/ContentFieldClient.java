@@ -18,27 +18,12 @@ public class ContentFieldClient extends Container {
     private Edit emailEdit;
     private Edit phoneEdit;
 
-    private final ArrayList<Long> usersForAssociate = new ArrayList<>();
-
-    private ListContainer listContainer;
-
     private final ArrayList<AssociatedClientTile> associatedClientTileArrayList = new ArrayList<>();
+    private final ArrayList<User> users;
 
     public ContentFieldClient() throws SQLException {
         UserController userController = new UserController();
-        ArrayList<User> users = userController.getCommonUsers();
-
-        ListContainer.Layout layout = listContainer.getLayout(0, 1);
-        layout.setup();
-
-        for (User user : users) {
-            AssociatedClientTile associatedClientTile = new AssociatedClientTile(layout, user);
-            Long idUser = associatedClientTile.getUserAssociated();
-            if (idUser != null) {
-                usersForAssociate.add(idUser);
-            }
-            associatedClientTileArrayList.add(associatedClientTile);
-        }
+        users = userController.getCommonUsers();
     }
 
     @Override
@@ -69,14 +54,17 @@ public class ContentFieldClient extends Container {
         associatedLabel.setForeColor(Variables.SECOND_COLOR);
         add(associatedLabel, PARENTSIZE + 50, AFTER + 20 , PARENTSIZE + 90, PREFERRED);
 
-        listContainer = new ListContainer();
-
+        ListContainer listContainer = new ListContainer();
+        ListContainer.Layout layout = listContainer.getLayout(0, 1);
+        layout.setup();
         listContainer.setRect(CENTER, PARENTSIZE + 82, PARENTSIZE + 90, PARENTSIZE + 60);
         listContainer.highlightColor = Color.WHITE;
         add(listContainer);
 
-        for (AssociatedClientTile associatedClientTile : associatedClientTileArrayList) {
+        for (User user : users) {
+            AssociatedClientTile associatedClientTile = new AssociatedClientTile(layout, user);
             listContainer.addContainer(associatedClientTile);
+            associatedClientTileArrayList.add(associatedClientTile);
         }
     }
 
@@ -93,6 +81,14 @@ public class ContentFieldClient extends Container {
     }
 
     public ArrayList<Long> getUsersForAssociate() {
+        final ArrayList<Long> usersForAssociate = new ArrayList<>();
+
+        for (AssociatedClientTile associatedClientTile : associatedClientTileArrayList) {
+            if (associatedClientTile.getUserAssociated() != null) {
+                usersForAssociate.add(associatedClientTile.getUserAssociated());
+            }
+        }
+
         return usersForAssociate;
     }
 }

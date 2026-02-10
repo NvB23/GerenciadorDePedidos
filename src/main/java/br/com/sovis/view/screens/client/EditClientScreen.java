@@ -1,8 +1,11 @@
 package br.com.sovis.view.screens.client;
 
 import br.com.sovis.controller.ClientController;
+import br.com.sovis.controller.UserController;
 import br.com.sovis.exception.ButtonException;
 import br.com.sovis.model.Client;
+import br.com.sovis.model.User;
+import br.com.sovis.view.partials.client.AssociatedClientTile;
 import br.com.sovis.view.style.MessageBoxVariables;
 import br.com.sovis.view.style.Variables;
 import totalcross.io.IOException;
@@ -14,6 +17,7 @@ import totalcross.ui.image.Image;
 import totalcross.ui.image.ImageException;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 public class EditClientScreen extends Container {
@@ -22,12 +26,17 @@ public class EditClientScreen extends Container {
     private final ClientController clientController = new ClientController();
     private Edit nameEdit, emailEdit, phoneEdit;
 
+    private final ArrayList<AssociatedClientTile> associatedClientTileArrayList = new ArrayList<>();
+    private final ArrayList<User> users;
+
     private final int APP_ID_SAVE_BUTTON = 5;
     private final int APP_ID_BACK_BUTTON = 999;
 
     public EditClientScreen(Container toContainer, Long idToEdit) throws SQLException {
         this.toContainer = toContainer;
         this.clientEdit = clientController.getClientById(idToEdit);
+        UserController userController = new UserController();
+        users = userController.getCommonUsers();
         setRect(0, 0, FILL, FILL);
     }
 
@@ -65,7 +74,7 @@ public class EditClientScreen extends Container {
 
         Label nameLabel = new Label("Nome do Cliente");
         nameLabel.setForeColor(Variables.SECOND_COLOR);
-        add(nameLabel, PARENTSIZE + 50, TOP + 60, PARENTSIZE + 90, PREFERRED);
+        add(nameLabel, PARENTSIZE + 50, TOP + 55, PARENTSIZE + 90, PREFERRED);
         nameEdit = new Edit();
         nameEdit.setForeColor(Variables.PRIMARY_COLOR);
         nameEdit.setText(clientEdit.getName());
@@ -73,7 +82,7 @@ public class EditClientScreen extends Container {
 
         Label emailLabel = new Label("Email do Cliente");
         emailLabel.setForeColor(Variables.SECOND_COLOR);
-        add(emailLabel, PARENTSIZE + 50, AFTER + 30 , PARENTSIZE + 90, PREFERRED);
+        add(emailLabel, PARENTSIZE + 50, AFTER + 20 , PARENTSIZE + 90, PREFERRED);
         emailEdit = new Edit();
         emailEdit.setForeColor(Variables.PRIMARY_COLOR);
         emailEdit.setText(clientEdit.getEmail());
@@ -81,13 +90,30 @@ public class EditClientScreen extends Container {
 
         Label phoneLabel = new Label("Telefone do Cliente");
         phoneLabel.setForeColor(Variables.SECOND_COLOR);
-        add(phoneLabel, PARENTSIZE + 50, AFTER + 30 , PARENTSIZE + 90, PREFERRED);
+        add(phoneLabel, PARENTSIZE + 50, AFTER + 20 , PARENTSIZE + 90, PREFERRED);
         phoneEdit = new Edit("99 99999-9999");
         phoneEdit.setValidChars("0123456789");
         phoneEdit.setForeColor(Variables.PRIMARY_COLOR);
         phoneEdit.setText(clientEdit.getPhone());
         phoneEdit.setMode(Edit.NORMAL, true);
         add(phoneEdit, CENTER, AFTER + 5, PARENTSIZE + 90, PREFERRED - 20);
+
+        Label associatedLabel = new Label("Clientes Associados");
+        associatedLabel.setForeColor(Variables.SECOND_COLOR);
+        add(associatedLabel, PARENTSIZE + 50, AFTER + 20 , PARENTSIZE + 90, PREFERRED);
+
+        ListContainer listContainer = new ListContainer();
+        ListContainer.Layout layout = listContainer.getLayout(0, 1);
+        layout.setup();
+        listContainer.setRect(CENTER, PARENTSIZE + 82, PARENTSIZE + 90, PARENTSIZE + 40);
+        listContainer.highlightColor = Color.WHITE;
+        add(listContainer);
+
+        for (User user : users) {
+            AssociatedClientTile associatedClientTile = new AssociatedClientTile(layout, user);
+            listContainer.addContainer(associatedClientTile);
+            associatedClientTileArrayList.add(associatedClientTile);
+        }
     }
 
     @Override
@@ -131,8 +157,16 @@ public class EditClientScreen extends Container {
             }
         }
 
+        ArrayList<Long> usersForAssociatedEdit = new ArrayList<>();
+
+        for (AssociatedClientTile associatedClientTile : associatedClientTileArrayList) {
+            if (associatedClientTile.getUserAssociated() != null) {
+                usersForAssociatedEdit.add(associatedClientTile.getUserAssociated());
+            }
+        }
+
         Client client = new Client(name, email, phone);
-        clientController.updateClient(clientEdit.getId(), client);
+        clientController.updateClient(clientEdit.getId(), client, usersForAssociatedEdit);
         MainWindow.getMainWindow().swap(new ClientScreen());
     }
 }

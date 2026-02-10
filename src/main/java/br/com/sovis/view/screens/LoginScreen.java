@@ -62,12 +62,6 @@ public class LoginScreen extends Container {
         if (event.type == ControlEvent.PRESSED) {
             if (event.target == enterButton) {
                 try {
-                    UserLogged.userLogged = new User(1L, "admin@sovis.com.br", "123", UserType.ADMIN);
-                    MainWindow.getMainWindow().swap(new HomeScreen());
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-                try {
                     boolean success = Authentication.login(emailEdit.getValue(), passwordEdit.getValue());
                     if (emailEdit.getText().isEmpty() || passwordEdit.getText().isEmpty()) {
                         MessageBoxVariables.voidFields();

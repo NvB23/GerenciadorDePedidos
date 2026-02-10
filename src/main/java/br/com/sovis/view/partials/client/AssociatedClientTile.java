@@ -8,7 +8,7 @@ import totalcross.ui.ListContainer;
 
 public class AssociatedClientTile extends ListContainer.Item {
     private final User user;
-    private Check userChek;
+    private Check userCheck;
 
     public AssociatedClientTile(ListContainer.Layout layout, User user) {
         super(layout);
@@ -19,16 +19,16 @@ public class AssociatedClientTile extends ListContainer.Item {
 
     @Override
     public void initUI() {
-        userChek = new Check();
-        userChek.setForeColor(Variables.PRIMARY_COLOR);
-        add(userChek, LEFT + 10, CENTER);
+        userCheck = new Check();
+        userCheck.setForeColor(Variables.PRIMARY_COLOR);
+        add(userCheck, LEFT + 10, CENTER);
         Label emailUserLabel = new Label(user.getEmail());
         emailUserLabel.setForeColor(Variables.PRIMARY_COLOR);
         add(emailUserLabel, AFTER + 20, CENTER);
     }
 
     public Long getUserAssociated() {
-        if (userChek.isChecked()) {
+        if (userCheck.isChecked()) {
             return user.getId();
         }
         return null;

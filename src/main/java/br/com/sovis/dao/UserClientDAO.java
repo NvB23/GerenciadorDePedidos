@@ -25,35 +25,26 @@ public class UserClientDAO {
         preparedStatement.setString(1, idUser);
         preparedStatement.setString(2, idClient);
 
-        int i = preparedStatement.executeUpdate();
+        preparedStatement.executeUpdate();
         preparedStatement.close();
-        connection.close();
-
-        if (i > 0) {
-        }
-        else if (i < 0) {
-        }
     }
 
     public boolean updateUserClient(
             String id,
             String idOrder,
-            String idProduct,
-            String quantity,
-            String itemValue
+            String idProduct
     ) throws SQLException {
 
         Connection connection = Database.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(
-                "UPDATE item_pedido SET idPedido = ?, idProduto = ?, quantidade = ?, valorItem = ? WHERE id = ?;");
+                "UPDATE usuario_cliente SET idCliente = ? WHERE idUsuario = ?;");
 
         preparedStatement.setString(1, idOrder);
         preparedStatement.setString(2, idProduct);
-        preparedStatement.setString(3, quantity);
-        preparedStatement.setString(4, itemValue);
-        preparedStatement.setString(5, id);
 
         int i = preparedStatement.executeUpdate();
+
+
         preparedStatement.close();
         connection.close();
 

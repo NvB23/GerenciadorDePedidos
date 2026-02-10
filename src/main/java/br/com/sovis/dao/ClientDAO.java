@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ClientDAO {
+    private final UserClientDAO userClientDAO = new UserClientDAO();
+
     public void createClient(
             String name,
             String email,
@@ -30,23 +32,29 @@ public class ClientDAO {
 
         PreparedStatement preparedStatementId = connection.prepareStatement("SELECT MAX(id) FROM cliente;");
         ResultSet resultSet = preparedStatementId.executeQuery();
+
         Long idClient = null;
         if (resultSet.next()) {
             idClient = resultSet.getLong(1);
         }
 
-        UserClientDAO userClientDAO = new UserClientDAO();
-
         for (Long idUser : usersForAssociate) {
-            userClientDAO.createUserClient(String.valueOf(idClient), String.valueOf(idUser));
+            userClientDAO.createUserClient(String.valueOf(idUser), String.valueOf(idClient));
         }
 
-        preparedStatement.close();
         preparedStatementId.close();
+        preparedStatement.close();
         connection.close();
     }
 
-    public void updateClient(String id, String name, String email, String phone, String dateRegister) throws SQLException {
+    public void updateClient(
+            String id,
+            String name,
+            String email,
+            String phone,
+            String dateRegister,
+            ArrayList<Long> userForAssociatedEdit
+    ) throws SQLException {
         Connection connection = Database.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "UPDATE cliente SET nome = ?, email = ?, telefone = ?, dataCadastro = ? WHERE id = ?;");
@@ -56,6 +64,8 @@ public class ClientDAO {
         preparedStatement.setString(3, phone);
         preparedStatement.setString(4, dateRegister);
         preparedStatement.setString(5, id);
+
+        
 
         preparedStatement.executeUpdate();
         preparedStatement.close();

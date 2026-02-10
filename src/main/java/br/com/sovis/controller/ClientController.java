@@ -20,13 +20,15 @@ public class ClientController {
             );
     }
 
-    public void updateClient(Long id, Client clientModify) throws SQLException {
+    public void updateClient(Long id, Client clientModify, ArrayList<Long> usersForAssociatedEdit) throws SQLException {
         clientDAO.updateClient(
                 String.valueOf(id),
                 clientModify.getName(),
                 clientModify.getEmail(),
                 clientModify.getPhone(),
-                clientModify.getDateRegister());
+                clientModify.getDateRegister(),
+                usersForAssociatedEdit
+            );
     }
 
     public void deleteClient(Long id) throws SQLException {

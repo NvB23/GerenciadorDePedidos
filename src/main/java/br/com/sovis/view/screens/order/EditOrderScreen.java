@@ -169,6 +169,7 @@ public class EditOrderScreen extends Container {
 
                     itemOrderTile = new ItemOrderTile(products, layout);
                     items.add(itemOrderTile);
+                    if (items.size() == products.size()) addButton.setEnabled(false);
                     listContainer.addContainer(itemOrderTile);
                 }
             });
@@ -180,6 +181,7 @@ public class EditOrderScreen extends Container {
 
                     if (selectedItem >= 0 && selectedItem < items.size()) {
                         items.remove(selectedItem);
+                        if (items.size() < products.size()) addButton.setEnabled(true);
 
                         remove(listContainer);
 
